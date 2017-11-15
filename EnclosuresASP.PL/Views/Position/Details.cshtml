@@ -1,0 +1,100 @@
+﻿@model EnclosuresASP.DAL.Entities.Enclosure
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Course</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>Номер</dt>
+        <dd>
+            @Html.DisplayFor(model => model.Number)
+        </dd>
+
+        <dt>Принял</dt>
+        <dd>
+            @Html.DisplayFor(model => model.Supervisor.FullName)
+        </dd>
+
+        <dt>Блоки</dt>
+        <dd>
+            <table class="table">
+                <tr>
+                    <th>Название</th>
+                    <th>УИД</th>
+                </tr>
+                @foreach (var item in Model.Blocks)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.BlockName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.UID)
+                        </td>
+                    </tr>
+                }
+
+            </table>
+        </dd>
+
+        <dt>Аккаунты</dt>
+        <dd>
+            <table class="table">
+                <tr>
+                    <th>ID</th>
+                    <th>Логин</th>
+                    <th>Пароль</th>
+                    <th>Уровень доступа</th>
+                </tr>
+                @foreach (var item in Model.Accounts)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.AccountID)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Login)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Password)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.AccAccessLvl.LvlName)
+                        </td>
+                    </tr>
+                }
+
+            </table>
+        </dd>
+
+        <dt>СКУД</dt>
+        <dd>
+            <table class="table">
+                <tr>
+                    <th>ID</th>
+                    <th>Код</th>
+                </tr>
+                @foreach (var item in Model.AccessControls)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ACSID)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Code)
+                        </td>
+                    </tr>
+                }
+            </table>
+        </dd>
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.EnclosureID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

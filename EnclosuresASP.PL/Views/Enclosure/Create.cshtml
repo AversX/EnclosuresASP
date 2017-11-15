@@ -1,0 +1,136 @@
+﻿<style type="text/css">
+    .k-upload {
+        width: 500px;
+    }
+</style>
+
+
+@model EnclosuresASP.PL.Models.EnclosureVM
+
+@{
+    ViewBag.Title = "Новая запись";
+}
+
+<br />
+
+@using (Html.BeginForm("Create", "Enclosure", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Шкаф</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        @Html.HiddenFor(m => m.EnclosureID)
+
+        <div class="form-group">
+            @Html.Label("Номер", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(m => m.Number, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(m => m.Number, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Принял", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(m => Model.EmployeID, Model.Employes, "Выберите сотрудника...", htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Employes, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Root логин", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(m => m.RootLogin, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(m => m.RootLogin, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Root пароль", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(m => m.RootPassword, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(m => m.RootPassword, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10" width="300">
+                <input name="files" id="files" type="file" />
+            </div>
+        </div>
+        
+        <script type="text/javascript">
+            function warning() {
+                return "Вы пытаетесь перезагрузить страницу. Данные будут потеряны."; //you can put your code here.
+            }
+            window.onbeforeunload = warning;
+
+            function onError(e) {
+                var element = document.getElementById('validityMsg');
+                if (!element)
+                    $("#files").parent().after("<div class='validation' id='validityMsg' style='color:red;margin-bottom: 20px;'>Ошибка загрузки</div>")
+
+                var removeButtonHtml = "<button class=\"k-button k-button-bare k-upload-action\" type=\"button\"><span title=\"Remove\" class=\"k-icon k-i-close k-delete\"></span></button>";
+                var retryButtons = $('.k-retry').parent();
+                try {
+                    retryButtons.each(function () {
+                        if ($(this).parent().html().indexOf(removeButtonHtml) === -1) {
+                            $(removeButtonHtml).insertAfter($(this));
+                        }
+                    });
+                }
+                catch (e) { }
+            }
+            function onRemove() {
+                var retryButtons = $('.k-retry').parent();
+                if (retryButtons.length==1) {
+                    var element = document.getElementById('validityMsg');
+                    if (element) {
+                        element.parentNode.removeChild(element);
+                    }
+                }
+            }
+            $(function () {
+                $("#files").kendoUpload({
+                    async: {
+                        saveUrl: '@Url.Action("SaveFile", "Enclosure", new { id = Model.EnclosureID })',
+                        removeUrl: '@Url.Action("RemoveFile", "Enclosure", new { id = Model.EnclosureID })',
+                        autoUpload: true
+                    },
+                    multiple: true,
+                    localization: {
+                        select: 'Выберите файлы',
+                        remove: '',
+                        cancel: ''
+                    },
+                    error: onError,
+                    remove: onRemove
+                });
+
+            });
+        </script>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="btn-group">
+                    <button id="submitBtn" name="submitBtn" class="k-primary" type="submit">Добавить</button>
+                    <button id="cancelBtn" name="cancelBtn" class="k-default" type="button" data-url="@Url.Action("Index", "Enclosure")">Отмена</button>
+                    <script type="text/javascript">
+                        $("#submitBtn").kendoButton().click(function () { window.onbeforeunload = null; window.onunload = null; });
+                        $("#cancelBtn").kendoButton().click(function () {
+                            var url = $(this).data('url');
+                            window.location.href = url;
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,22 @@
+﻿@model EnclosuresASP.PL.Models.UserVM
+
+@{
+    ViewBag.Title = "Создание пользователя";
+}
+
+<p> @Html.ValidationSummary(false, "", new { @class = "text-danger" }) </p>
+@using (Html.BeginForm())
+{
+    <div class="form-group">
+        <label>Имя</label>
+        @Html.TextBoxFor(x => x.Name, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        <label>Пароль</label>
+        @Html.TextBoxFor(x => x.Password, new { @class = "form-control" })
+    </div>
+    <button type="submit" class="btn btn-primary">Создать</button>
+
+    @Html.ActionLink("Отмена", "Index", null, new { @class = "btn btn-default" })
+}

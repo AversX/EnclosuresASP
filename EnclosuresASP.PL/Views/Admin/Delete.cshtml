@@ -1,0 +1,103 @@
+﻿@model EnclosuresASP.DAL.Entities.Enclosure
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Вы уверены, что хотите удалить запись?</h3>
+<div>
+    <h4>Шкаф</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>Номер</dt>
+        <dd>
+            @Html.DisplayFor(model => model.Number)
+           
+        </dd>
+        <br />
+
+        <dt>Принял</dt>
+        <dd>
+            @{
+                string s = Model.Supervisor.EmpPosition.PosName + ", " + Model.Supervisor.FullName;
+                @Html.Display(s)
+            }
+        </dd>
+        <br />
+
+        <dt>Блоки</dt>
+        <dd>
+            <table class="table">
+                <tr>
+                    <th>Наименование</th>
+                    <th>УИД</th>
+                </tr>
+                @foreach (var item in Model.Blocks)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.BlockName.BlockName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.UID)
+                        </td>
+                    </tr>
+                }
+
+            </table>
+        </dd>
+        <br />
+
+        <dt>СКУД</dt>
+        <dd>
+            <table class="table">
+                <tr>
+                    <th>ID</th>
+                    <th>Код</th>
+                </tr>
+                @foreach (var item in Model.ACSs)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ACSID)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Code)
+                        </td>
+                    </tr>
+                }
+            </table>
+        </dd>
+        <br />
+
+        <dt>Прошивка</dt>
+        <dd>
+                @{
+                    if (Model.FirmwareFile != null)
+                    {
+                        <td>
+                            @Html.DisplayFor(model => model.FirmwareFilename)
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            @Html.Label("Файл отсутствует")
+                        </td>
+                    }
+                }
+        </dd>
+        <br />
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>

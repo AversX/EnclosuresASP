@@ -1,0 +1,114 @@
+﻿@model EnclosuresASP.PL.Models.BlockVM
+@using (Html.BeginForm("CreateBlock", "Enclosure", FormMethod.Post, new { id = "formid" }))
+{
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>Редактирование производителя</h3>
+    </div>
+    @Html.AntiForgeryToken()
+    <div class="modal-body">
+        @Html.HiddenFor(m => m.EnclosureID)
+
+        <div class="editor-label">
+            
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(m => m.UID, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(m => m.UID, "", new { @class = "text-danger" })
+            @Html.DropDownListFor(m => m.TypicalBlockID, Model.TypicalBlocks, "Выберите тип блока...", htmlAttributes: new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.TypicalBlocks, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="modal-footer">
+        <input type="submit" class="btn btn-success" value="Сохранить" />
+        <a href="#" class="btn" data-dismiss="modal">Close</a>
+    </div>
+}
+
+<script type="text/javascript">
+    $("#formid").submit(function (e) {
+        e.preventDefault();
+        if ($(this).valid()) {
+            $.ajax({
+                type: "POST",
+                url: $(this).attr('CreateBlock'),
+                data: $(this).serialize(),
+                success: function (result) {
+                    $('#blockModal').modal('hide');
+                }
+            });
+        }
+    });
+}
+</script>
+@*@model EnclosuresASP.PL.Models.BlockVM
+
+@using (Html.BeginForm("CreateBlock", "Enclosure", FormMethod.Post, new { @id = "blockForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    
+    <div>
+
+        @Html.HiddenFor(m => m.EnclosureID)
+
+        <div class="form-group">
+            @Html.Label("УИД", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(m => m.UID, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(m => m.UID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Тип блока", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(m => m.TypicalBlockID, Model.TypicalBlocks, "Выберите тип блока...", htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.TypicalBlocks, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <div class="btn-group">
+                        <button id="blockCreateBtn" name="blockCreateBtn" class="k-primary" type="submit">Создать</button>
+                        <button id="blockCancelBtn" name="blockCancelBtn" class="k-default" type="button" data-dismiss="modal">Отмена</button>
+                        <script type="text/javascript">
+                            $("#blockCreateBtn").kendoButton().click = function () { $('#blockModal').modal('hide'); };
+                            $("#blockCancelBtn").kendoButton();
+                        </script>
+                    </div>
+                </div>
+            </div>
+    </div>
+}
+
+<script type="text/javascript">
+    var frm = $("#blockForm");
+    $(document).ready(function () {
+        debugger;
+        frm.submit(function (e) {
+            e.preventDefault();
+            frm.validate({});
+            if (frm.valid()) {
+                $.ajax({
+                    url: "/Enclosure/CreateBlock",
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({
+                        UID: $('#UID').val(),
+                        TypicalBlockID: $('#TypicalBlockID').val(),
+                        EnclosureID: $('#EnclosureID').val(),
+                    }),
+                    success: function (result) {
+                        $('#blockModal').modal('hide');
+                        alert(result); 
+                    },
+                    error: function (result) {
+                        alert(result); 
+                    }
+                });
+            }
+        });
+    });
+</script>*@

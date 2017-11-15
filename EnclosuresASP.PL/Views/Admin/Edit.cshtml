@@ -1,0 +1,26 @@
+﻿@model EnclosuresASP.PL.Models.UserVM
+@{
+    ViewBag.Title = "Редактирование пользователя";
+}
+
+
+<p> @Html.ValidationSummary(false, "", new { @class = "text-danger" }) </p>
+<div class="form-group">
+    <label>Id</label>
+    <p class="form-control-static">@Model.Id</p>
+</div>
+
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(x => x.Id)
+    <div class="form-group">
+        <label>Имя</label>
+        @Html.TextBoxFor(x => x.Name, new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        <label>Пароль</label>
+        @Html.TextBoxFor(x => x.Password, new { @class = "form-control" })
+    </div>
+    <button type="submit" class="btn btn-primary" formnovalidate>Сохранить</button>
+    @Html.ActionLink("Отмена", "Index", null, new { @class = "btn btn-default" })
+}

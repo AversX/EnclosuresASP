@@ -1,0 +1,150 @@
+﻿<style type="text/css">
+    .span-center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .icon {
+        width: 32px;
+        height: 32px;
+        float: left;
+        background: url(../Content/kendo/Bootstrap/sprite_2x.png) no-repeat;
+    }
+
+    .icon-checked {
+        background-position: -64px -64px;
+    }
+
+    .icon-unchecked {
+        background-position: -96px -96px;
+    }
+</style>
+
+
+
+
+@model IEnumerable<EnclosuresASP.DAL.Entities.Enclosure>
+
+@{
+    ViewBag.Title = "Список шкафов";
+}
+
+<br />
+<p>
+    <button id="addBtn" name="addBtn" class="k-primary" type="button" data-url="@Url.Action("Create", "Enclosure")">Добавить</button>
+    <script type="text/javascript">
+        $("#addBtn").kendoButton().click(function () {
+            var url = $(this).data('url');
+            window.location.href = url;
+        });
+    </script>
+</p>
+
+@*@using (Html.BeginForm())
+    {
+        <p>
+            Select Department: @Html.DropDownList("SelectedDepartment", "All")
+            <input type="submit" value="Filter" />
+        </p>
+    }*@
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        Список шкафов
+    </div>
+    <table class="table table-striped">
+
+        <tr>
+            <th class="text-center">Номер</th>
+            <th class="text-center">Принял</th>
+            <th class="text-center">Root-аккаунт</th>
+            <th class="text-center">Блоки</th>
+            <th class="text-center">СКУД</th>
+            <th class="text-center">Файлы</th>
+            <th></th>
+        </tr>
+
+        @if (Model.Count() == 0)
+        {
+            <tr>
+                <td colspan="9" class="text-center">Нет ни одной записи</td>
+            </tr>
+        }
+        else
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td class="text-center">
+                        @Html.DisplayFor(modelItem => item.Number)
+                    </td>
+                    <td class="text-center">
+                        @Html.DisplayFor(modelItem => item.Supervisor.EmpPosition.PosName)
+                        <br />
+                        @Html.DisplayFor(modelItem => item.Supervisor.FullName)
+                    </td>
+                    @{
+                        if (item.RootLogin != null || item.RootPassword != null)
+                        {
+                            if ((item.RootLogin != null && item.RootLogin.Length > 0) || (item.RootPassword != null && item.RootPassword.Length > 0))
+                            {
+                                <td>
+                                    <div class="span-center">
+                                        <span class="icon icon-checked"></span>
+                                    </div>
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+                                    <div class="span-center">
+                                        <span class="icon icon-unchecked"></span>
+                                    </div>
+                                </td>
+                            }
+                        }
+                        else
+                        {
+                            <td>
+                                <div class="span-center">
+                                    <span class="icon icon-unchecked"></span>
+                                </div>
+                            </td>
+                        }
+                    }
+                    <td class="text-center">
+                        @Html.DisplayFor(modelItem => item.Blocks.Count)
+                    </td>
+                    <td class="text-center">
+                        @Html.DisplayFor(modelItem => item.ACSs.Count)
+                    </td>
+                    <td class="text-center">
+                        @Html.DisplayFor(modelItem => item.Files.Count)
+                    </td>
+
+                    <td class="text-center">
+                        @{
+                            string editBtnName = "editBtn" + item.EnclosureID;
+                            string detailsBtnName = "detailsBtn" + item.EnclosureID;
+                            string deleteBtnName = "deleteBtn" + item.EnclosureID;
+                            <button id=@editBtnName name=@editBtnName class="k-primary" type="button" data-url="@Url.Action("Edit", "Enclosure", new { id = item.EnclosureID })">Редактировать</button>
+
+
+                            <button id=@detailsBtnName name=@detailsBtnName class="k-primary" type="button" data-url="@Url.Action("Details", "Enclosure", new { id = item.EnclosureID })">Подробнее</button>
+
+                            <button id=@deleteBtnName name=@deleteBtnName class="k-primary" type="button" data-url="@Url.Action("Delete", "Enclosure", new { id = item.EnclosureID })">Удалить</button>
+
+                            <script type="text/javascript">
+                                $('.k-primary').kendoButton().click(function () {
+                                    var url = $(this).data('url');
+                                    window.location.href = url;
+                                });
+                            </script>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </table>
+</div>

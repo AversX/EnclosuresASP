@@ -1,0 +1,44 @@
+﻿@using EnclosuresASP.DAL.Identity;
+@model IEnumerable<AppUser>
+
+@{
+    ViewBag.Title = "Admin";
+}
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        Учетные записи
+    </div>
+    <table class="table table-striped">
+        <tr>
+            <th>Id</th>
+            <th>Имя</th>
+            <th></th>
+        </tr>
+        @if (Model.Count() == 0)
+        {
+            <tr>
+                <td colspan="4" class="text-center">Нет ни одной учетной записи</td>
+            </tr>
+        }
+        else
+        {
+            foreach (AppUser user in Model)
+            {
+                <tr>
+                    <td>@user.Id</td>
+                    <td>@user.UserName</td>
+                    <td>
+                        @using (Html.BeginForm("Delete", "Admin", new { id = user.Id }))
+                        {
+                            @Html.ActionLink("Изменить", "Edit", new { id = user.Id },
+                            new { @class = "btn btn-primary btn-xs", style = "float: left; margin-right: 10px" })
+                            <button class="btn btn-danger btn-xs" type="submit">Удалить</button>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </table>
+</div>
+@Html.ActionLink("Создать", "Create", null, new { @class = "btn btn-primary" })
