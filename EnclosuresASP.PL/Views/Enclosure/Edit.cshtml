@@ -12,7 +12,49 @@
     ViewBag.Title = "Редактировать шкаф №" + Model.Number;
 }
 
-@using (Html.BeginForm("Edit", "Enclosure", FormMethod.Post))
+<br />
+
+<div class="form-horizontal">
+    <!-- Modal -->
+    <div id="blockModal" class="modal fade" role="dialog" data-url='@Url.Action("CreateBlock", "Enclosure", new { id = Model.EnclosureID })'>
+        <div class="modal-dialog modal-lg">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Добавить блок</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <div id="blockModalBody"></div>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="form-horizontal">
+    <!-- Modal -->
+    <div id="acsModal" class="modal fade" role="dialog" data-url='@Url.Action("CreateACS", "Enclosure", new { id = Model.EnclosureID })'>
+        <div class="modal-dialog modal-lg">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Добавить СКУД</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <div id="acsModalBody"></div>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginForm("Edit", "Enclosure", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
 
@@ -63,38 +105,15 @@
                     <div class="panel-heading">
                         Блоки
                     </div>
-                    <table class="table table-striped">
-                        <tr>
-                            <th class="text-center">Название</th>
-                            <th class="text-center">УИД</th>
-                        </tr>
-                        @if (Model.Blocks?.Count == 0)
-                        {
-                            <tr>
-                                <td colspan="2" class="text-center">Нет ни одного блока</td>
-                            </tr>
-                        }
-                        else
-                        {
-                            foreach (var item in Model.Blocks)
-                            {
-                                <tr>
-                                    <td class="text-center">
-                                        @Html.DisplayFor(modelItem => item.BlockName.BlockName)
-                                    </td>
-                                    <td class="text-center">
-                                        @Html.DisplayFor(modelItem => item.UID)
-                                    </td>
-                                </tr>
-                            }
-                        }
-                    </table>
+                    <div id="blocksTable">
+                        @Html.Action("GetBlocks", "Enclosure", new { id = Model.EnclosureID })
+                    </div>
                 </div>
             </div>
 
             <div class="form-group">
                 <div class="col-md-1">
-                    <button id="showModal" type="button" class="btn btn-primary">Добавить</button>
+                    <button id="showBlockModal" type="button" class="btn btn-primary">Добавить</button>
                 </div>
             </div>
         </div>
@@ -105,69 +124,18 @@
                     <div class="panel-heading">
                         СКУД
                     </div>
-                    <table class="table table-striped">
-                        <tr>
-                            <th class="text-center">ID</th>
-                            <th class="text-center">Код</th>
-                        </tr>
-                        @if (Model.ACSs?.Count == 0)
-                        {
-                            <tr>
-                                <td colspan="2" class="text-center">Нет ни одной записи</td>
-                            </tr>
-                        }
-                        else
-                        {
-                            foreach (var item in Model.ACSs)
-                            {
-                                <tr>
-                                    <td class="text-center">
-                                        @Html.DisplayFor(modelItem => item.ACSID)
-                                    </td>
-                                    <td class="text-center">
-                                        @Html.DisplayFor(modelItem => item.Code)
-                                    </td>
-                                </tr>
-                            }
-                        }
-                    </table>
+                    <div id="acsTable">
+                        @Html.Action("GetACSs", "Enclosure", new { id = Model.EnclosureID })
+                    </div>
                 </div>
             </div>
 
             <div class="form-group">
                 <div class="col-md-1">
-                    <button id="showModal" type="button" class="btn btn-primary">Добавить</button>
+                    <button id="showACSModal" type="button" class="btn btn-primary">Добавить</button>
                 </div>
             </div>
         </div>
-
-
-        <!-- Modal -->
-        <div id="blockModal" class="modal fade" role="dialog" data-url='@Url.Action("CreateBlock", "Enclosure", new { id = Model.EnclosureID })'>
-            <div class="modal-dialog modal-lg">
-                <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Добавить блок</h4>
-                    </div>
-                    <div class="modal-body">
-                        <p>
-                            <div id="blockModalBody"></div>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        @Ajax.ActionLink("Add block", "CreateBlock", new { id = Model.EnclosureID },
-                        new AjaxOptions
-                        {
-                            UpdateTargetId = "blockModal",
-                            InsertionMode = InsertionMode.Replace,
-                            HttpMethod = "GET",
-                            OnSuccess = "ShowProducerEditModal"
-                        },
-                        null)
 
              @Html.Hidden("existing-files", Model.JsonFiles)
             <div class="form-group">
@@ -187,15 +155,8 @@
         </div>
 }
 
-
 <script type="text/javascript">
-    function ShowProducerEditModal() {
-        $('#blockModal').modal('show');
-    }
-
-
-    $('#showModal').click(function () {
-
+    $('#showBlockModal').click(function () {
         var url = $('#blockModal').data('url');
         $.get(url, function (data) {
             $('#blockModalBody').html(data);
@@ -203,83 +164,66 @@
         });
     });
 
-    function bindForm(dialog) {
-        $('form', dialog).submit(function () {
-            $.ajax({
-                url: this.action,
-                type: this.method,
-                data: $(this).serialize(),
-                success: function (result) {
-                    if (result.success) {
-                        $('#myModal').modal('hide');
-                        $('#replacetarget').load(result.url); //  Load data from the server and place the returned HTML into the matched element
-                    } else {
-                        $('#myModalContent').html(result);
-                        bindForm(dialog);
-                    }
-                }
-            });
-            return false;
+    $('#showACSModal').click(function () {
+        var url = $('#acsModal').data('url');
+        $.get(url, function (data) {
+            $('#acsModalBody').html(data);
+            $('#acsModal').modal('show');
         });
+    });
+
+    function onError(e) {
+        var element = document.getElementById('validityMsg');
+        if (!element)
+            $("#files").parent().after("<div class='validation' id='validityMsg' style='color:red;margin-bottom: 20px;'>Ошибка загрузки</div>")
+
+        var removeButtonHtml = "<button class=\"k-button k-button-bare k-upload-action\" type=\"button\"><span title=\"Remove\" class=\"k-icon k-i-close k-delete\"></span></button>";
+        var retryButtons = $('.k-retry').parent();
+        try {
+            retryButtons.each(function () {
+                if ($(this).parent().html().indexOf(removeButtonHtml) === -1) {
+                    $(removeButtonHtml).insertAfter($(this));
+                }
+            });
+        }
+        catch (e) { }
     }
-
-
-
-
-    
-
-            function onError(e) {
-                var element = document.getElementById('validityMsg');
-                if (!element)
-                    $("#files").parent().after("<div class='validation' id='validityMsg' style='color:red;margin-bottom: 20px;'>Ошибка загрузки</div>")
-
-                var removeButtonHtml = "<button class=\"k-button k-button-bare k-upload-action\" type=\"button\"><span title=\"Remove\" class=\"k-icon k-i-close k-delete\"></span></button>";
-                var retryButtons = $('.k-retry').parent();
-                try {
-                    retryButtons.each(function () {
-                        if ($(this).parent().html().indexOf(removeButtonHtml) === -1) {
-                            $(removeButtonHtml).insertAfter($(this));
-                        }
-                    });
-                }
-                catch (e) { }
+    function onRemove() {
+        var retryButtons = $('.k-retry').parent();
+        if (retryButtons.length==1) {
+            var element = document.getElementById('validityMsg');
+            if (element) {
+                element.parentNode.removeChild(element);
             }
-            function onRemove() {
-                var retryButtons = $('.k-retry').parent();
-                if (retryButtons.length==1) {
-                    var element = document.getElementById('validityMsg');
-                    if (element) {
-                        element.parentNode.removeChild(element);
-                    }
-                }
-            }
-            $(function () {
-                var filesJson = $("[name$='existing-files']").val();
-                var initFiles = JSON.parse(filesJson);
-                $("#files").kendoUpload({
-                    async: {
-                        saveUrl: '@Url.Action("SaveFile", "Enclosure", new { id = Model.EnclosureID })',
-                        removeUrl: '@Url.Action("RemoveFile", "Enclosure", new { id = Model.EnclosureID })',
-                        autoUpload: true
-                    },
-                    multiple: true,
-                    localization: {
-                        select: 'Выберите файлы',
-                        remove: '',
-                        cancel: ''
-                    },
-                    files: initFiles,
-                    error: onError,
-                    remove: onRemove
-                });
+        }
+    }
+    $(function () {
+        var filesJson = $("[name$='existing-files']").val();
+        var initFiles = JSON.parse(filesJson);
+        $("#files").kendoUpload({
+            async: {
+                saveUrl: '@Url.Action("SaveFile", "Enclosure", new { id = Model.EnclosureID })',
+                removeUrl: '@Url.Action("RemoveFile", "Enclosure", new { id = Model.EnclosureID })',
+                autoUpload: true
+            },
+            multiple: true,
+            localization: {
+                select: 'Выберите файлы',
+                remove: '',
+                cancel: ''
+            },
+            files: initFiles,
+            error: onError,
+            remove: onRemove
+        });
 
-            });
+    });
 
-            $("#submitBtn").kendoButton();
-            $("#cancelBtn").kendoButton().click(function () {
-                var url = $(this).data('url');
-                window.location.href = url;
-            });
+    $("#submitBtn").kendoButton();
+    $("#cancelBtn").kendoButton().click(function () {
+        var url = $(this).data('url');
+        window.location.href = url;
+    });
 </script>
 
 @section Scripts {

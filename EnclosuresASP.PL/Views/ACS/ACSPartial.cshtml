@@ -1,0 +1,54 @@
+﻿@model EnclosuresASP.PL.Models.AcsVM
+
+@{
+    ViewBag.Title = "Создать СКУД";
+}
+
+@using (Ajax.BeginForm("CreateACS", "Enclosure", null, new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccess" }, new { @id = "acsForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div>
+
+        @Html.HiddenFor(m => m.EnclosureID)
+
+        <div class="form-group">
+            @Html.Label("Код", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(m => m.Code, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(m => m.Code, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="btn-group">
+                    <button id="acsCreateBtn" name="acsCreateBtn" class="k-primary" type="submit">Создать</button>
+                    <button id="acsCancelBtn" name="acsCreateBtn" class="k-default" data-dismiss="modal" type="button">Отмена</button>
+                    <script type="text/javascript">
+                        $("#acsCreateBtn").kendoButton();
+                        $("#acsCancelBtn").kendoButton();
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    function onSuccess(result) {
+        if (result.success == true) {
+            $('#acsTable').load('@Url.Action("GetACSs", "Enclosure")', { id: @Model.EnclosureID });
+            $('#acsModal').modal('hide');
+        }
+        else
+        {
+            $('#acsModalBody').html(result);
+        }
+    }
+</script>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

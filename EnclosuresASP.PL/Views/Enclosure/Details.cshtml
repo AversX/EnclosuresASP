@@ -12,7 +12,7 @@
     ViewBag.Title = "Шкаф №" + Model.Number;
 }
 
-<div>
+<div class="row">
     <h4>Шкаф №@Model.Number</h4>
     <hr />
 
@@ -20,22 +20,22 @@
         @Html.HiddenFor(m => m.EnclosureID)
 
         <div class="form-group">
-            @Html.Label("ID", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
+            @Html.Label("ID", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
                 @Html.DisplayFor(m => m.EnclosureID, new { htmlAttributes = new { @class = "form-control" } })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.Label("Номер", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
+            @Html.Label("Номер", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
                 @Html.DisplayFor(m => m.Number, new { htmlAttributes = new { @class = "form-control" } })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.Label("Принял", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
+            @Html.Label("Принял", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
                 @Html.DisplayFor(m => Model.Supervisor.EmpPosition.PosName, new { htmlAttributes = new { @class = "form-control" } })
                 <br />
                 @Html.DisplayFor(m => Model.Supervisor.FullName, new { htmlAttributes = new { @class = "form-control" } })
@@ -43,8 +43,8 @@
         </div>
 
         <div class="form-group">
-            @Html.Label("Root-логин", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
+            @Html.Label("Root-логин", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
                 @if (Model.RootLogin?.Length > 0)
                 {
                     @Html.DisplayFor(model => model.RootLogin);
@@ -57,8 +57,8 @@
         </div>
 
         <div class="form-group">
-            @Html.Label("Root-пароль", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
+            @Html.Label("Root-пароль", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
                 @if (Model.RootPassword?.Length > 0)
                 {
                     @Html.DisplayFor(model => model.RootPassword);
@@ -69,81 +69,81 @@
                 }
             </div>
         </div>
+    </div>
 
-        <div class="form-group">
-            <div class="col-md-offset-1">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        Блоки
-                    </div>
-                    <table class="table table-striped">
+    <div class="form-group">
+        <div class="col-md-5 col-md-offset-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    Блоки
+                </div>
+                <table class="table table-striped">
+                    <tr>
+                        <th class="text-center">Название</th>
+                        <th class="text-center">УИД</th>
+                    </tr>
+                    @if (Model.Blocks?.Count == 0)
+                    {
                         <tr>
-                            <th class="text-center">Название</th>
-                            <th class="text-center">УИД</th>
+                            <td colspan="2" class="text-center">Нет ни одного блока</td>
                         </tr>
-                        @if (Model.Blocks?.Count == 0)
+                    }
+                    else
+                    {
+                        foreach (var item in Model.Blocks)
                         {
                             <tr>
-                                <td colspan="2" class="text-center">Нет ни одного блока</td>
+                                <td class="text-center">
+                                    @Html.DisplayFor(modelItem => item.BlockName.BlockName)
+                                </td>
+                                <td class="text-center">
+                                    @Html.DisplayFor(modelItem => item.UID)
+                                </td>
                             </tr>
                         }
-                        else
-                        {
-                            foreach (var item in Model.Blocks)
-                            {
-                                <tr>
-                                    <td class="text-center">
-                                        @Html.DisplayFor(modelItem => item.BlockName.BlockName)
-                                    </td>
-                                    <td class="text-center">
-                                        @Html.DisplayFor(modelItem => item.UID)
-                                    </td>
-                                </tr>
-                            }
-                        }
-                    </table>
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-5 col-md-offset-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    СКУД
                 </div>
+                <table class="table table-striped">
+                    <tr>
+                        <th class="text-center">ID</th>
+                        <th class="text-center">Код</th>
+                    </tr>
+                    @if (Model.Blocks?.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="2" class="text-center">Нет ни одной записи</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var item in Model.ACSs)
+                        {
+                            <tr>
+                                <td class="text-center">
+                                    @Html.DisplayFor(modelItem => item.ACSID)
+                                </td>
+                                <td class="text-center">
+                                    @Html.DisplayFor(modelItem => item.Code)
+                                </td>
+                            </tr>
+                        }
+                    }
+                </table>
             </div>
         </div>
 
         <div class="form-group">
-            <div class="col-md-offset-1">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        СКУД
-                    </div>
-                    <table class="table table-striped">
-                        <tr>
-                            <th class="text-center">ID</th>
-                            <th class="text-center">Код</th>
-                        </tr>
-                        @if (Model.Blocks?.Count == 0)
-                        {
-                            <tr>
-                                <td colspan="2" class="text-center">Нет ни одной записи</td>
-                            </tr>
-                        }
-                        else
-                        {
-                            foreach (var item in Model.ACSs)
-                            {
-                                <tr>
-                                    <td class="text-center">
-                                        @Html.DisplayFor(modelItem => item.ACSID)
-                                    </td>
-                                    <td class="text-center">
-                                        @Html.DisplayFor(modelItem => item.Code)
-                                    </td>
-                                </tr>
-                            }
-                        }
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-1">
+            <div class="col-md-offset-3 col-md-5">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         Файлы
@@ -153,7 +153,7 @@
                         <tr>
                             <th class="text-center">Имя</th>
                             <th class="text-center">Размер</th>
-                            <th></th>
+                            <th class="text-center">Скачать</th>
                         </tr>
                         @if (Model.Files?.Count == 0)
                         {
@@ -191,8 +191,8 @@
                                         <a href="@Url.Action("DownloadFile", new { fileID = item.EnclosureFileID })" title="Скачать"><div class="span-center"><img src="~/Content/images/boxdownload32.png" alt="" width="32" height="32" /></div></a>
                                     </td>
                                 </tr>
-                                                }
-                                            }
+                            }
+                        }
                     </table>
                 </div>
             </div>

@@ -81,30 +81,30 @@ namespace EnclosuresASP.PL.Controllers
                     return View("SupervisorError", new HandleErrorInfo(ex, "Enclosure", "Index"));
                 }
 
-                enclosure.Blocks = new List<Block>();
-                for (int i = 0; i < enclosureVM.Blocks.Count; i++)
+                if (enclosure.Blocks!=null)
                 {
-                    try
+                    for (int i=0; i<enclosure.Blocks.Count; i++)
                     {
-                            enclosure.Blocks.Add(enclosureVM.Blocks[i]);
-                    }
-                    catch (Exception ex)
-                    {
-                        return View("BlocksError", new HandleErrorInfo(ex, "Enclosure", "Index"));
+                        enclosure.Blocks.ToList()[i].Temporary = false;
                     }
                 }
-                enclosure.ACSs = new List<ACS>();
-                for (int i = 0; i < enclosureVM.ACSs.Count; i++)
+
+                if (enclosure.ACSs != null)
                 {
-                    try
+                    for (int i = 0; i < enclosure.ACSs.Count; i++)
                     {
-                            enclosure.ACSs.Add(enclosureVM.ACSs[i]);
-                    }
-                    catch (Exception ex)
-                    {
-                        return View("BlocksError", new HandleErrorInfo(ex, "Enclosure", "Index"));
+                        enclosure.ACSs.ToList()[i].Temporary = false;
                     }
                 }
+
+                if (enclosure.Files != null)
+                {
+                    for (int i = 0; i < enclosure.Files.Count; i++)
+                    {
+                        enclosure.Files.ToList()[i].Temporary = false;
+                    }
+                }
+
                 enclosure.Temporary = false;
                 enclosureService.Update(enclosure);
                 enclosureService.unitOfWork.Save();
@@ -182,33 +182,6 @@ namespace EnclosuresASP.PL.Controllers
                 return View("SupervisorError", new HandleErrorInfo(ex, "Enclosure", "Index"));
             }
 
-            enclosureToUpdate.Blocks = new List<Block>();
-            for (int i = 0; i < enclosureVM.Blocks.Count; i++)
-            {
-                try
-                {
-                    if (!enclosureToUpdate.Blocks.Contains(enclosureVM.Blocks[i]))
-                        enclosureToUpdate.Blocks.Add(enclosureVM.Blocks[i]);
-                }
-                catch (Exception ex)
-                {
-                    return View("BlocksError", new HandleErrorInfo(ex, "Enclosure", "Index"));
-                }
-            }
-            enclosureToUpdate.ACSs = new List<ACS>();
-            for (int i = 0; i < enclosureVM.ACSs.Count; i++)
-            {
-                try
-                {
-                    if (!enclosureToUpdate.ACSs.Contains(enclosureVM.ACSs[i]))
-                        enclosureToUpdate.ACSs.Add(enclosureVM.ACSs[i]);
-                }
-                catch (Exception ex)
-                {
-                    return View("BlocksError", new HandleErrorInfo(ex, "Enclosure", "Index"));
-                }
-            }
-
             try
             {
                 enclosureService.Update(enclosureToUpdate);
@@ -284,37 +257,64 @@ namespace EnclosuresASP.PL.Controllers
         {
             if (ModelState.IsValid)
             {
+                Enclosure enclosure = enclosureService.GetByID(blockVM.EnclosureID);
+
                 TypicalBlockService typicalBlockService = new TypicalBlockService(enclosureService.unitOfWork);
                 Block block = new Block()
                 {
                     UID = blockVM.UID,
-                    BlockName = typicalBlockService.GetByID(blockVM.TypicalBlockID)
+                    BlockName = typicalBlockService.GetByID(blockVM.TypicalBlockID),
+                    Temporary = true
                 };
-                Enclosure enclosure = enclosureService.GetByID(blockVM.EnclosureID);
+                
                 if (enclosure.Blocks == null) enclosure.Blocks = new List<Block>();
                 enclosure.Blocks.Add(block);
                 enclosureService.Update(enclosure);
                 enclosureService.Save();
-                //return RedirectToAction("EditAfterPopup", new { jsonStr = JsonConvert.SerializeObject(enclosureVM) });
-                //return Json(new { success = true, JsonRequestBehavior.AllowGet });
-                return Json(new { isValid = true });
+                return Json(new { success = true }, JsonRequestBehavior.AllowGet);
             }
-            PopulateBlockList(blockVM);
-            // return PartialView("~/Views/Block/BlockPartial.cshtml", blockVM);
-            return Json(new
-            {
-                partialView = RenderUtils.RenderRazorViewToString(this, "~/Views/Block/BlockPartial.cshtml", blockVM),
-                isValid = false
-            });
+            return PartialView("~/Views/Block/BlockPartial.cshtml", blockVM);
         }
 
-        public EmptyResult DeleteOnClose(int id)
+        public ActionResult GetBlocks(int? id)
         {
-            Enclosure enclosureToDelete = enclosureService.GetByID(id);
-            enclosureToDelete.Supervisor = null;
-            enclosureService.Delete(id);
-            enclosureService.unitOfWork.Save();
-            return new EmptyResult();
+            List<Block> blocks = enclosureService.GetByID(id).Blocks.ToList();
+            return PartialView("~/Views/Block/BlockTablePartial.cshtml", blocks);
+        }
+
+        public ActionResult CreateACS(int id)
+        {
+            AcsVM acsVM = new AcsVM { EnclosureID = id };
+            return PartialView("~/Views/ACS/ACSPartial.cshtml", acsVM);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreateACS(AcsVM acsVM)
+        {
+            if (ModelState.IsValid)
+            {
+                Enclosure enclosure = enclosureService.GetByID(acsVM.EnclosureID);
+
+                TypicalBlockService typicalBlockService = new TypicalBlockService(enclosureService.unitOfWork);
+                ACS acs = new ACS()
+                {
+                    Code = acsVM.Code,
+                    Temporary = true
+                };
+
+                if (enclosure.ACSs == null) enclosure.ACSs = new List<ACS>();
+                enclosure.ACSs.Add(acs);
+                enclosureService.Update(enclosure);
+                enclosureService.Save();
+                return Json(new { success = true, data = GetACSs(acsVM.EnclosureID) }, JsonRequestBehavior.AllowGet);
+            }
+            return PartialView("~/Views/ACS/ACSPartial.cshtml", acsVM);
+        }
+
+        public ActionResult GetACSs(int? id)
+        {
+            return PartialView("~/Views/ACS/ACSTablePartial.cshtml", enclosureService.GetByID(id).ACSs.ToList());
         }
 
         #region Privates
@@ -348,7 +348,8 @@ namespace EnclosuresASP.PL.Controllers
                     {
                         Filename = Path.GetFileName(file.FileName),
                         Bytes = memoryStream.ToArray(),
-                        MimeType = MIME.GetMimeType(Path.GetFileName(file.FileName))
+                        MimeType = MIME.GetMimeType(Path.GetFileName(file.FileName)),
+                        Temporary = true
                     };
 
                     if (!enclosure.Files.Contains(enclosureFile)) enclosure.Files.Add(enclosureFile);

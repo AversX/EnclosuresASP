@@ -8,6 +8,7 @@ namespace EnclosuresASP.DAL.Entities
         public byte[] Bytes { get; set; }
         public string Filename { get; set; }
         public string MimeType { get; set; }
+        public bool Temporary { get; set; }
 
         [Required]
         public int EnclosureID { get; set; }
