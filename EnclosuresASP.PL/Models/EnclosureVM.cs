@@ -20,10 +20,9 @@ namespace EnclosuresASP.PL.Models
         public string RootLogin { get; set; }
         public string RootPassword { get; set; }
 
-        public List<Block> Blocks { get; set; }
+        public string FilesJSON { get; set; }
 
-        public List<ACS> ACSs { get; set; }
-
-        public string JsonFiles { get; set; }
+        public string BlocksJSON { get; set; }
+        public string ACSsJSON { get; set; }
     }
 }

@@ -38,11 +38,24 @@ namespace EnclosuresASP.PL.Controllers
         // GET: Enclosure/Create
         [HttpGet]
         public ActionResult Create()
-        {            
-            Enclosure enclosure = new Enclosure() { Temporary = true, Number = "temp", Username = HttpContext.User.Identity.Name };
+        {
+            Enclosure enclosure = new Enclosure()
+            {
+                Temporary = true,
+                Number = "temp",
+                Username = HttpContext.User.Identity.Name,
+                Blocks = new List<Block>(),
+                ACSs = new List<ACS>()
+            };
             enclosureService.Insert(enclosure);
             enclosureService.Save();
-            EnclosureVM enclosureVM = new EnclosureVM() { EnclosureID = enclosure.EnclosureID, Username = enclosure.Username };
+            EnclosureVM enclosureVM = new EnclosureVM()
+            {
+                EnclosureID = enclosure.EnclosureID,
+                Username = enclosure.Username,
+                BlocksJSON = JsonConvert.SerializeObject(enclosure.Blocks),
+                ACSsJSON = JsonConvert.SerializeObject(enclosure.ACSs)
+            };
             PopulateEmployeList(enclosureVM);
             return View(enclosureVM);
         }
@@ -55,8 +68,6 @@ namespace EnclosuresASP.PL.Controllers
             try
             {
                 EmployeService employeService = new EmployeService(enclosureService.unitOfWork);
-                BlockService blockService = new BlockService(enclosureService.unitOfWork);
-                ACSService aCSService = new ACSService(enclosureService.unitOfWork);
 
                 Enclosure enclosure;
                 try
@@ -81,21 +92,11 @@ namespace EnclosuresASP.PL.Controllers
                     return View("SupervisorError", new HandleErrorInfo(ex, "Enclosure", "Index"));
                 }
 
-                if (enclosure.Blocks!=null)
-                {
-                    for (int i=0; i<enclosure.Blocks.Count; i++)
-                    {
-                        enclosure.Blocks.ToList()[i].Temporary = false;
-                    }
-                }
+                List<Block> blocks = JsonConvert.DeserializeObject<List<Block>>(enclosureVM.BlocksJSON);
+                if (blocks != null) enclosure.Blocks = blocks;
 
-                if (enclosure.ACSs != null)
-                {
-                    for (int i = 0; i < enclosure.ACSs.Count; i++)
-                    {
-                        enclosure.ACSs.ToList()[i].Temporary = false;
-                    }
-                }
+                List<ACS> acss = JsonConvert.DeserializeObject<List<ACS>>(enclosureVM.ACSsJSON);
+                enclosure.ACSs = acss;
 
                 if (enclosure.Files != null)
                 {
@@ -130,7 +131,6 @@ namespace EnclosuresASP.PL.Controllers
             {
                 return HttpNotFound();
             }
-            string filesJson = JsonConvert.SerializeObject(enclosure.Files.Select(x => new { name = x.Filename, extension = Path.GetExtension(x.Filename), size = x.Bytes.Length }).ToList());
             EnclosureVM enclosureVM = new EnclosureVM()
             {
                 EnclosureID = enclosure.EnclosureID,
@@ -138,9 +138,9 @@ namespace EnclosuresASP.PL.Controllers
                 EmployeID = enclosure.Supervisor.EmployeID,
                 RootLogin = enclosure.RootLogin,
                 RootPassword = enclosure.RootPassword,
-                Blocks = enclosure.Blocks.ToList(),
-                ACSs = enclosure.ACSs.ToList(),
-                JsonFiles = filesJson
+                BlocksJSON = JsonConvert.SerializeObject(enclosure.Blocks),
+                ACSsJSON = JsonConvert.SerializeObject(enclosure.ACSs),
+                FilesJSON = JsonConvert.SerializeObject(enclosure.Files.Select(x => new { name = x.Filename, extension = Path.GetExtension(x.Filename), size = x.Bytes.Length }).ToList())
             };
             PopulateEmployeList(enclosureVM, enclosureVM.EmployeID);
             return View(enclosureVM);
@@ -182,6 +182,20 @@ namespace EnclosuresASP.PL.Controllers
                 return View("SupervisorError", new HandleErrorInfo(ex, "Enclosure", "Index"));
             }
 
+            List<Block> blocks = JsonConvert.DeserializeObject<List<Block>>(enclosureVM.BlocksJSON);
+            if (blocks != null) enclosureToUpdate.Blocks = blocks;
+
+            List<ACS> acss = JsonConvert.DeserializeObject<List<ACS>>(enclosureVM.ACSsJSON);
+            if (acss != null) enclosureToUpdate.ACSs = acss;
+
+            if (enclosureToUpdate.Files != null)
+            {
+                for (int i = 0; i < enclosureToUpdate.Files.Count; i++)
+                {
+                    enclosureToUpdate.Files.ToList()[i].Temporary = false;
+                }
+            }
+
             try
             {
                 enclosureService.Update(enclosureToUpdate);
@@ -208,7 +222,6 @@ namespace EnclosuresASP.PL.Controllers
             {
                 return HttpNotFound();
             }
-            string filesJson = JsonConvert.SerializeObject(enclosure.Files.Select(x => new { name = x.Filename, extension = Path.GetExtension(x.Filename), size = x.Bytes.Length }).ToList());
             EnclosureVM enclosureVM = new EnclosureVM()
             {
                 EnclosureID = enclosure.EnclosureID,
@@ -216,9 +229,9 @@ namespace EnclosuresASP.PL.Controllers
                 EmployeID = enclosure.Supervisor.EmployeID,
                 RootLogin = enclosure.RootLogin,
                 RootPassword = enclosure.RootPassword,
-                Blocks = enclosure.Blocks.ToList(),
-                ACSs = enclosure.ACSs.ToList(),
-                JsonFiles = filesJson
+                //Blocks = enclosure.Blocks.ToList(),
+                //ACSs = enclosure.ACSs.ToList(),
+                FilesJSON = JsonConvert.SerializeObject(enclosure.Files.Select(x => new { name = x.Filename, extension = Path.GetExtension(x.Filename), size = x.Bytes.Length }).ToList())
             };
             PopulateEmployeList(enclosureVM, enclosureVM.EmployeID);
             return View(enclosure);
@@ -244,11 +257,20 @@ namespace EnclosuresASP.PL.Controllers
             base.Dispose(disposing);
         }
 
-        public ActionResult CreateBlock(int id)
+        #region BlockPartial
+        [HttpGet]
+        public ActionResult GetBlocks(string blocks)
         {
-            BlockVM blockVM = new BlockVM() { EnclosureID = id };
+            List<Block> Blocks = JsonConvert.DeserializeObject<List<Block>>(blocks);
+            return PartialView("~/Views/Block/BlockTablePartial.cshtml", Blocks);
+        }
+
+        [HttpGet]
+        public ActionResult CreateBlock(string blocks)
+        {
+            BlockVM blockVM = new BlockVM() { Blocks = blocks };
             PopulateBlockList(blockVM);
-            return PartialView("~/Views/Block/BlockPartial.cshtml", blockVM);
+            return PartialView("~/Views/Block/CreateBlockPartial.cshtml", blockVM);
         }
 
         [HttpPost]
@@ -257,35 +279,74 @@ namespace EnclosuresASP.PL.Controllers
         {
             if (ModelState.IsValid)
             {
-                Enclosure enclosure = enclosureService.GetByID(blockVM.EnclosureID);
+                List<Block> Blocks = JsonConvert.DeserializeObject<List<Block>>(blockVM.Blocks);
+                TypicalBlockService typicalBlockService = new TypicalBlockService(enclosureService.unitOfWork);
+                Block block = new Block()
+                {
+                    UID = blockVM.UID,
+                    BlockName = typicalBlockService.GetByID(blockVM.TypicalBlockID),
+                };
+                Blocks.Add(block);
+                return Json(new { success = true, data = JsonConvert.SerializeObject(Blocks) }, JsonRequestBehavior.AllowGet);
+            }
+            PopulateBlockList(blockVM);
+            return PartialView("~/Views/Block/CreateBlockPartial.cshtml", blockVM);
+        }
+
+        [HttpGet]
+        public ActionResult EditBlock(string blocks, string blockToEdit)
+        {
+            Block BlockToEdit = JsonConvert.DeserializeObject<Block>(blockToEdit);
+
+            BlockVM blockVM = new BlockVM()
+            {
+                TypicalBlockID = BlockToEdit.BlockName.TypicalBlockID,
+                UID = BlockToEdit.UID,
+                Blocks = blocks,
+                OriginBlock = blockToEdit
+            };
+            PopulateBlockList(blockVM, blockVM.TypicalBlockID);
+            return PartialView("~/Views/Block/EditBlockPartial.cshtml", blockVM);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditBlock(BlockVM blockVM)
+        {
+            if (ModelState.IsValid)
+            {
+                List<Block> Blocks = JsonConvert.DeserializeObject<List<Block>>(blockVM.Blocks);
 
                 TypicalBlockService typicalBlockService = new TypicalBlockService(enclosureService.unitOfWork);
                 Block block = new Block()
                 {
                     UID = blockVM.UID,
                     BlockName = typicalBlockService.GetByID(blockVM.TypicalBlockID),
-                    Temporary = true
                 };
-                
-                if (enclosure.Blocks == null) enclosure.Blocks = new List<Block>();
-                enclosure.Blocks.Add(block);
-                enclosureService.Update(enclosure);
-                enclosureService.Save();
-                return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+                Block originBlock = JsonConvert.DeserializeObject<Block>(blockVM.OriginBlock);
+                int index = Blocks.IndexOf(originBlock);
+                if (index >= 0)
+                    Blocks[index] = block;
+                return Json(new { success = true, data = JsonConvert.SerializeObject(Blocks) }, JsonRequestBehavior.AllowGet);
             }
-            return PartialView("~/Views/Block/BlockPartial.cshtml", blockVM);
+            PopulateBlockList(blockVM);
+            return PartialView("~/Views/Block/EditBlockPartial.cshtml", blockVM);
+        }
+        #endregion
+
+        #region ACSPartial
+        [HttpGet]
+        public ActionResult GetACSs(string acssJSON)
+        {
+            List<ACS> acss = JsonConvert.DeserializeObject<List<ACS>>(acssJSON);
+            return PartialView("~/Views/ACS/ACSTablePartial.cshtml", acss);
         }
 
-        public ActionResult GetBlocks(int? id)
+        [HttpGet]
+        public ActionResult CreateACS(string acssJSON)
         {
-            List<Block> blocks = enclosureService.GetByID(id).Blocks.ToList();
-            return PartialView("~/Views/Block/BlockTablePartial.cshtml", blocks);
-        }
-
-        public ActionResult CreateACS(int id)
-        {
-            AcsVM acsVM = new AcsVM { EnclosureID = id };
-            return PartialView("~/Views/ACS/ACSPartial.cshtml", acsVM);
+            AcsVM acsVM = new AcsVM { JsonACSs = acssJSON };
+            return PartialView("~/Views/ACS/ACSPartial.cshtml", acsVM);            
         }
 
         [HttpPost]
@@ -294,28 +355,61 @@ namespace EnclosuresASP.PL.Controllers
         {
             if (ModelState.IsValid)
             {
-                Enclosure enclosure = enclosureService.GetByID(acsVM.EnclosureID);
-
-                TypicalBlockService typicalBlockService = new TypicalBlockService(enclosureService.unitOfWork);
+                List<ACS> ACSs = JsonConvert.DeserializeObject<List<ACS>>(acsVM.JsonACSs);
                 ACS acs = new ACS()
                 {
-                    Code = acsVM.Code,
-                    Temporary = true
+                    Code = acsVM.Code
                 };
-
-                if (enclosure.ACSs == null) enclosure.ACSs = new List<ACS>();
-                enclosure.ACSs.Add(acs);
-                enclosureService.Update(enclosure);
-                enclosureService.Save();
-                return Json(new { success = true, data = GetACSs(acsVM.EnclosureID) }, JsonRequestBehavior.AllowGet);
+                ACSs.Add(acs);
+                return Json(new { success = true, data = JsonConvert.SerializeObject(ACSs) }, JsonRequestBehavior.AllowGet);
             }
             return PartialView("~/Views/ACS/ACSPartial.cshtml", acsVM);
         }
 
-        public ActionResult GetACSs(int? id)
+        [HttpGet]
+        public ActionResult EditACS(string acssJSON)
         {
-            return PartialView("~/Views/ACS/ACSTablePartial.cshtml", enclosureService.GetByID(id).ACSs.ToList());
+            //BlockService blockService = new BlockService(enclosureService.unitOfWork);
+            //Block block = blockService.GetByID(id);
+            BlockVM blockVM = new BlockVM();
+            //{
+            //    BlockID = block.BlockID,
+            //    EnclosureID = block.EnclosureID,
+            //    TypicalBlockID = block.BlockName.TypicalBlockID,
+            //    UID = block.UID
+            //};
+            //PopulateBlockList(blockVM, blockVM.TypicalBlockID);
+            return PartialView("~/Views/Block/BlockPartial.cshtml", blockVM);
         }
+
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult EditBlock(BlockVM blockVM)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        if (blockVM == null)
+        //        {
+        //            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //        }
+        //        BlockService blockService = new BlockService(enclosureService.unitOfWork);
+
+        //        Block block = blockService.GetByID(blockVM.BlockID);
+
+        //        TypicalBlockService typicalBlockService = new TypicalBlockService(enclosureService.unitOfWork);
+        //        block.UID = blockVM.UID;
+        //        block.BlockName = typicalBlockService.GetByID(blockVM.TypicalBlockID);
+
+        //        if (enclosure.Blocks == null) enclosure.Blocks = new List<Block>();
+        //        enclosure.Blocks.Add(block);
+        //        enclosureService.Update(enclosure);
+        //        enclosureService.Save();
+        //        return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+        //    }
+        //    PopulateBlockList(blockVM);
+        //    return PartialView("~/Views/Block/BlockPartial.cshtml", blockVM);
+        //}
+        #endregion
 
         #region Privates
         private void PopulateEmployeList(EnclosureVM encVM, object selectedEmployes = null)

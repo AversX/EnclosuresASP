@@ -12,6 +12,7 @@
     <div>
 
         @Html.HiddenFor(m => m.EnclosureID)
+        @Html.HiddenFor(m => m.JsonACSs)
 
         <div class="form-group">
             @Html.Label("Код", htmlAttributes: new { @class = "control-label col-md-2" })
@@ -39,11 +40,13 @@
 <script type="text/javascript">
     function onSuccess(result) {
         if (result.success == true) {
-            $('#acsTable').load('@Url.Action("GetACSs", "Enclosure")', { id: @Model.EnclosureID });
+            var url = '@Url.Action("GetACSs", "Enclosure", new { acssJSON = "RESULT" })';
+            url = url.replace("RESULT", result.data);
+            $('#acssTable').load(url);
             $('#acsModal').modal('hide');
+            $('#ACSsJSON').val(result.data);
         }
-        else
-        {
+        else {
             $('#acsModalBody').html(result);
         }
     }

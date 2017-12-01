@@ -1,26 +1,45 @@
-﻿@model IEnumerable<EnclosuresASP.DAL.Entities.ACS>
+﻿<style type="text/css">
+    .span-center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+
+@model List<EnclosuresASP.DAL.Entities.ACS>
 
 <table class="table table-striped">
     <tr>
-        <th class="text-center">ID</th>
         <th class="text-center">Код</th>
+        <th class="text-center">Действия</th>
     </tr>
     @if (Model.Count() == 0)
     {
         <tr>
-            <td colspan="2" class="text-center">Нет ни одной записи</td>
+            <td colspan="3" class="text-center">Нет ни одной записи</td>
         </tr>
     }
     else
     {
-        foreach (var item in Model)
+        for (int i = 0; i < Model.Count(); i++)
         {
             <tr>
                 <td class="text-center">
-                    @Html.DisplayFor(modelItem => item.ACSID)
+                    @Html.DisplayFor(modelItem => Model[i].Code)
                 </td>
                 <td class="text-center">
-                    @Html.DisplayFor(modelItem => item.Code)
+                    @{
+                        string editBtnName = "editACSBtn" + i;
+                        string deleteBtnName = "deleteACSBtn" + i;
+                        <button id=@editBtnName name=@editBtnName class="actionBtns k-primary" type="button" data-url="@Url.Action("EditACS", "Enclosure", new { acssJSON = Json.Encode(Model[i]) })">Редактировать</button>
+                        <button id=@deleteBtnName name=@deleteBtnName class="actionBtns k-primary" type="button" data-url="@Url.Action("DeleteACS", "Enclosure", new { acssJSON = Json.Encode(Model[i]) })">Удалить</button>
+                    }
+                    <script type="text/javascript">
+                        $('.actionBtns').kendoButton().click(function () {
+                            var url = $(this).data('url');
+                            window.location.href = url;
+                        });
+                    </script>
                 </td>
             </tr>
         }

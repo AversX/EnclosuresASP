@@ -16,7 +16,7 @@
 
 <div class="form-horizontal">
     <!-- Modal -->
-    <div id="blockModal" class="modal fade" role="dialog" data-url='@Url.Action("CreateBlock", "Enclosure", new { id = Model.EnclosureID })'>
+    <div id="blockModal" class="modal fade" role="dialog">
         <div class="modal-dialog modal-lg">
             <!-- Modal content-->
             <div class="modal-content">
@@ -36,7 +36,7 @@
 
 <div class="form-horizontal">
     <!-- Modal -->
-    <div id="acsModal" class="modal fade" role="dialog" data-url='@Url.Action("CreateACS", "Enclosure", new { id = Model.EnclosureID })'>
+    <div id="acsModal" class="modal fade" role="dialog">
         <div class="modal-dialog modal-lg">
             <!-- Modal content-->
             <div class="modal-content">
@@ -66,39 +66,40 @@
         @Html.HiddenFor(model => model.EnclosureID)
 
         <div class="row">
-                <div class="form-group">
-                    @Html.Label("Номер", htmlAttributes: new { @class = "control-label col-md-4" })
-                    <div class="col-md-8">
-                        @Html.EditorFor(m => Model.Number, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(m => m.Number, "", new { @class = "text-danger" })
-                    </div>
+            <div class="form-group">
+                @Html.Label("Номер", htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    @Html.EditorFor(m => Model.Number, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(m => m.Number, "", new { @class = "text-danger" })
                 </div>
+            </div>
 
-                <div class="form-group">
-                    @Html.Label("Принял", htmlAttributes: new { @class = "control-label col-md-4" })
-                    <div class="col-md-8">
-                        @Html.DropDownListFor(m => Model.EmployeID, Model.Employes, "Выберите сотрудника...", htmlAttributes: new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.Employes, "", new { @class = "text-danger" })
-                    </div>
+            <div class="form-group">
+                @Html.Label("Принял", htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    @Html.DropDownListFor(m => Model.EmployeID, Model.Employes, "Выберите сотрудника...", htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Employes, "", new { @class = "text-danger" })
                 </div>
+            </div>
 
-                <div class="form-group">
-                    @Html.Label("Root логин", htmlAttributes: new { @class = "control-label col-md-4" })
-                    <div class="col-md-8">
-                        @Html.EditorFor(m => m.RootLogin, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(m => m.RootLogin, "", new { @class = "text-danger" })
-                    </div>
+            <div class="form-group">
+                @Html.Label("Root логин", htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    @Html.EditorFor(m => m.RootLogin, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(m => m.RootLogin, "", new { @class = "text-danger" })
                 </div>
+            </div>
 
-                <div class="form-group">
-                    @Html.Label("Root пароль", htmlAttributes: new { @class = "control-label col-md-4" })
-                    <div class="col-md-8">
-                        @Html.EditorFor(m => m.RootPassword, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(m => m.RootPassword, "", new { @class = "text-danger" })
-                    </div>
+            <div class="form-group">
+                @Html.Label("Root пароль", htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    @Html.EditorFor(m => m.RootPassword, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(m => m.RootPassword, "", new { @class = "text-danger" })
                 </div>
+            </div>
         </div>
 
+        @Html.HiddenFor(m => m.BlocksJSON)
         <div class="row">
             <div class="col-md-5 col-md-offset-3">
                 <div class="panel panel-primary">
@@ -106,66 +107,79 @@
                         Блоки
                     </div>
                     <div id="blocksTable">
-                        @Html.Action("GetBlocks", "Enclosure", new { id = Model.EnclosureID })
+                        @Html.Action("GetBlocks", "Enclosure", new { blocks = Model.BlocksJSON })
                     </div>
                 </div>
             </div>
 
             <div class="form-group">
                 <div class="col-md-1">
-                    <button id="showBlockModal" type="button" class="btn btn-primary">Добавить</button>
+                    <button id="addBlockBtn" type="button" class="btn btn-primary">Добавить</button>
                 </div>
             </div>
         </div>
 
+        @Html.HiddenFor(m => m.ACSsJSON)
         <div class="row">
             <div class="col-md-5 col-md-offset-3">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         СКУД
                     </div>
-                    <div id="acsTable">
-                        @Html.Action("GetACSs", "Enclosure", new { id = Model.EnclosureID })
+                    <div id="acssTable">
+                        @Html.Action("GetACSs", "Enclosure", new { acssJSON = Model.ACSsJSON })
                     </div>
                 </div>
             </div>
 
             <div class="form-group">
                 <div class="col-md-1">
-                    <button id="showACSModal" type="button" class="btn btn-primary">Добавить</button>
+                    <button id="addACSBtn" type="button" class="btn btn-primary">Добавить</button>
                 </div>
             </div>
         </div>
 
-             @Html.Hidden("existing-files", Model.JsonFiles)
-            <div class="form-group">
-                <div class="col-md-offset-3 col-md-5">
-                    <input name="files" id="files" type="file" />
-                </div>
+        @Html.Hidden("existing-files", Model.FilesJSON)
+        <div class="form-group">
+            <div class="col-md-offset-3 col-md-5">
+                <input name="files" id="files" type="file" />
             </div>
+        </div>
 
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <div class="btn-group">
-                        <button id="submitBtn" name="submitBtn" class="k-primary" type="submit">Применить</button>
-                        <button id="cancelBtn" name="cancelBtn" class="k-default" type="button" data-url="@Url.Action("Index", "Enclosure")">Отмена</button>
-                    </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="btn-group">
+                    <button id="submitBtn" name="submitBtn" class="k-primary" type="submit">Применить</button>
+                    <button id="cancelBtn" name="cancelBtn" class="k-default" type="button" data-url="@Url.Action("Index", "Enclosure")">Отмена</button>
                 </div>
             </div>
         </div>
+    </div>
 }
 
 <script type="text/javascript">
-    $('#showBlockModal').click(function () {
-        var url = $('#blockModal').data('url');
+    $('.blockEditBtn').kendoButton().click(function () {
+        debugger;
+        var url = $(this).data('url');
+        window.location.href = url;
         $.get(url, function (data) {
             $('#blockModalBody').html(data);
             $('#blockModal').modal('show');
         });
     });
 
-    $('#showACSModal').click(function () {
-        var url = $('#acsModal').data('url');
+    $('#addBlockBtn').click(function () {
+        var url = '@Url.Action("CreateBlock", "Enclosure", new { blocks = "VALUE" })';
+        url = url.replace("VALUE", $('#BlocksJSON').val());
+        $.get(url, function (data) {
+            $('#blockModalBody').html(data);
+            $('#blockModal').modal('show');
+        });
+    });
+
+    $('#addACSBtn').click(function () {
+        var url = '@Url.Action("CreateACS", "Enclosure", new { acssJSON = "VALUE" })';
+        url = url.replace("VALUE", $('#ACSsJSON').val());
         $.get(url, function (data) {
             $('#acsModalBody').html(data);
             $('#acsModal').modal('show');

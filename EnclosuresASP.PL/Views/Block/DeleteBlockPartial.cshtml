@@ -1,0 +1,64 @@
+﻿@model EnclosuresASP.PL.Models.BlockVM
+
+@{
+    ViewBag.Title = "Создать блок";
+}
+
+@using (Ajax.BeginForm("CreateBlock", "Enclosure", null, new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccess" }, new { @id = "blockEditForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div>
+        @Html.HiddenFor(m => m.Blocks)
+        @Html.HiddenFor(m => m.OriginBlock)
+
+        <div class="form-group">
+            @Html.Label("УИД", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(m => m.UID, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(m => m.UID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Тип блока", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(m => m.TypicalBlockID, Model.TypicalBlocks, "Выберите тип блока...", htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.TypicalBlocks, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="btn-group">
+                    <button id="blockCreateBtn" name="blockCreateBtn" class="k-primary" type="submit">Создать</button>
+                    <button id="blockCancelBtn" name="blockCancelBtn" class="k-default" data-dismiss="modal" type="button">Отмена</button>
+                    <script type="text/javascript">
+                        $("#blockCreateBtn").kendoButton();
+                        $("#blockCancelBtn").kendoButton();
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+     function onSuccess(result) {
+        if (result.success == true) {
+            var url = '@Url.Action("GetBlocks", "Enclosure", new { blocks = "resultBlocks" })';
+            url = url.replace("resultBlocks", result.data);
+            $('#blocksTable').load(url);
+            $('#blockModal').modal('hide');
+            $('#BlocksJSON').val(result.data);
+        }
+        else {
+            $('#blockModalBody').html(result);
+        }
+    }
+</script>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

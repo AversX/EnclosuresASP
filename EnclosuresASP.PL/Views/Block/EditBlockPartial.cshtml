@@ -1,17 +1,17 @@
 ﻿@model EnclosuresASP.PL.Models.BlockVM
 
 @{
-    ViewBag.Title = "Создать блок";
+    ViewBag.Title = "Редактировать блок";
 }
 
-@using (Ajax.BeginForm("CreateBlock", "Enclosure", null, new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccess" }, new { @id = "blockForm" }))
+@using (Ajax.BeginForm("EditBlock", "Enclosure", null, new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccess" }, new { @id = "blockDeleteForm" }))
 {
     @Html.AntiForgeryToken()
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
     <div>
-
-        @Html.HiddenFor(m => m.EnclosureID)
+        @Html.HiddenFor(m => m.Blocks)
+        @Html.HiddenFor(m => m.OriginBlock)
 
         <div class="form-group">
             @Html.Label("УИД", htmlAttributes: new { @class = "control-label col-md-2" })
@@ -32,11 +32,11 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <div class="btn-group">
-                    <button id="blockCreateBtn" name="blockCreateBtn" class="k-primary" type="submit">Создать</button>
-                    <button id="blockCancelBtn" name="blockCancelBtn" class="k-default" data-dismiss="modal" type="button">Отмена</button>
+                    <button id="blockCreateBtn" class="k-primary" type="submit">Создать</button>
+                    <button id="blockCancelBtn" class="k-default" data-dismiss="modal" type="button">Отмена</button>
                     <script type="text/javascript">
-                        $("#blockCreateBtn").kendoButton();
-                        $("#blockCancelBtn").kendoButton();
+                        $('.k-primary').kendoButton();
+                        $('.k-default').kendoButton();
                     </script>
                 </div>
             </div>
@@ -45,10 +45,13 @@
 }
 
 <script type="text/javascript">
-    function onSuccess(result) {      
+     function onSuccess(result) {
         if (result.success == true) {
-            $('#blocksTable').load('@Url.Action("GetBlocks", "Enclosure")', { id: @Model.EnclosureID });
+            var url = '@Url.Action("GetBlocks", "Enclosure", new { blocks = "resultBlocks" })';
+            url = url.replace("resultBlocks", result.data);
+            $('#blocksTable').load(url);
             $('#blockModal').modal('hide');
+            $('#BlocksJSON').val(result.data);
         }
         else {
             $('#blockModalBody').html(result);

@@ -14,5 +14,7 @@ namespace EnclosuresASP.PL.Models
         public string Code { get; set; }
 
         public int EnclosureID { get; set; }
+
+        public string JsonACSs { get; set; }
     }
 }

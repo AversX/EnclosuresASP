@@ -9,6 +9,7 @@ namespace EnclosuresASP.DAL.Entities
         public string Filename { get; set; }
         public string MimeType { get; set; }
         public bool Temporary { get; set; }
+        public string Username { get; set; }
 
         [Required]
         public int EnclosureID { get; set; }

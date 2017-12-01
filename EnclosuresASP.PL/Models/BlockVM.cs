@@ -17,6 +17,7 @@ namespace EnclosuresASP.PL.Models
 
         public IEnumerable<SelectListItem> TypicalBlocks { get; set; }
 
-        public int EnclosureID { get; set; }
+        public string Blocks { get; set; }
+        public string OriginBlock { get; set; }
     }
 }
