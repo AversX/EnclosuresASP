@@ -1,89 +1,117 @@
-﻿using System;
+﻿using EnclosuresASP.BLL.Services;
+using EnclosuresASP.DAL.Entities;
+using EnclosuresASP.PL.ActivityTrack;
+using EnclosuresASP.PL.Models;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using System.Net;
 using System.Web.Mvc;
 
 namespace EnclosuresASP.PL.Controllers
 {
+    [Authorize]
+    [TraceFilter]
     public class PositionController : Controller
     {
-        // GET: Position
+        PositionService positionService = new PositionService();
+
+        [HttpGet]
         public ActionResult Index()
         {
-            return View();
+            return View(positionService.Get());
         }
 
-        // GET: Position/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: Position/Create
+        [HttpGet]
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: Position/Create
         [HttpPost]
-        public ActionResult Create(FormCollection collection)
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(Position position)
         {
-            try
+            if (ModelState.IsValid)
             {
-                // TODO: Add insert logic here
-
+                positionService.Insert(position);
+                positionService.Save();
                 return RedirectToAction("Index");
             }
-            catch
+            return View(position);
+        }
+
+        [HttpGet]
+        public ActionResult Edit(int? id)
+        {
+            if (id == null)
             {
-                return View();
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-        }
-
-        // GET: Position/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: Position/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            try
+            Position position = positionService.GetByID(id);
+            if (position == null)
             {
-                // TODO: Add update logic here
+                return HttpNotFound();
+            }
+            return View(position);
+        }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(Position position)
+        {
+            if (ModelState.IsValid)
+            {
+                positionService.Update(position);
+                positionService.unitOfWork.Save();
                 return RedirectToAction("Index");
             }
-            catch
-            {
-                return View();
-            }
+            return View(position);
         }
 
-        // GET: Position/Delete/5
-        public ActionResult Delete(int id)
+        [HttpGet]
+        public ActionResult Delete(int? id)
         {
-            return View();
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Position position = positionService.GetByID(id);
+            if (position == null)
+            {
+                return HttpNotFound();
+            }
+            EmployeService employeService = new EmployeService(positionService.unitOfWork);
+            PositionVM positionVM = new PositionVM()
+            {
+                Employes = employeService.Get().Where(x => x.EmpPosition?.PositionID == position.PositionID).ToList(),
+                PositionID = position.PositionID,
+                PosName = position.PosName
+            };
+            return View(positionVM);
         }
 
-        // POST: Position/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmed(int id)
         {
-            try
+            EmployeService employeService = new EmployeService(positionService.unitOfWork);
+            List<Employe> employes = employeService.Get().Where(x => x.EmpPosition?.PositionID == id).ToList();
+            for (int i = 0; i < employes.Count; i++)
             {
-                // TODO: Add delete logic here
+                employes[i].EmpPosition = null;
+            }
+            positionService.Delete(id);
+            positionService.unitOfWork.Save();
+            return RedirectToAction("Index");
+        }
 
-                return RedirectToAction("Index");
-            }
-            catch
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
             {
-                return View();
+                positionService.unitOfWork.Dispose();
             }
+            base.Dispose(disposing);
         }
     }
 }

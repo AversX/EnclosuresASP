@@ -1,5 +1,4 @@
-﻿using EnclosuresASP.DAL.Entities;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 
@@ -14,7 +13,7 @@ namespace EnclosuresASP.PL.Models
         [Required(ErrorMessage = "Обязательное поле")]
         public string Number { get; set; }
 
-        public int EmployeID { get; set; }
+        public int? EmployeID { get; set; }
         public IEnumerable<SelectListItem> Employes { get; set; }
 
         public string RootLogin { get; set; }

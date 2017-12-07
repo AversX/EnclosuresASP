@@ -1,89 +1,117 @@
-﻿using System;
+﻿using EnclosuresASP.BLL.Services;
+using EnclosuresASP.DAL.Entities;
+using EnclosuresASP.PL.ActivityTrack;
+using EnclosuresASP.PL.Models;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using System.Net;
 using System.Web.Mvc;
 
 namespace EnclosuresASP.PL.Controllers
 {
+    [Authorize]
+    [TraceFilter]
     public class TypicalBlockController : Controller
     {
-        // GET: TypicalBlock
+        TypicalBlockService typicalBlockService = new TypicalBlockService();
+
+        [HttpGet]
         public ActionResult Index()
         {
-            return View();
+            return View(typicalBlockService.Get());
         }
 
-        // GET: TypicalBlock/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: TypicalBlock/Create
+        [HttpGet]
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: TypicalBlock/Create
         [HttpPost]
-        public ActionResult Create(FormCollection collection)
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(TypicalBlock typicalBlock)
         {
-            try
+            if (ModelState.IsValid)
             {
-                // TODO: Add insert logic here
-
+                typicalBlockService.Insert(typicalBlock);
+                typicalBlockService.Save();
                 return RedirectToAction("Index");
             }
-            catch
+            return View(typicalBlock);
+        }
+
+        [HttpGet]
+        public ActionResult Edit(int? id)
+        {
+            if (id == null)
             {
-                return View();
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-        }
-
-        // GET: TypicalBlock/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: TypicalBlock/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            try
+            TypicalBlock typicalBlock = typicalBlockService.GetByID(id);
+            if (typicalBlock == null)
             {
-                // TODO: Add update logic here
+                return HttpNotFound();
+            }
+            return View(typicalBlock);
+        }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(TypicalBlock typicalBlock)
+        {
+            if (ModelState.IsValid)
+            {
+                typicalBlockService.Update(typicalBlock);
+                typicalBlockService.Save();
                 return RedirectToAction("Index");
             }
-            catch
-            {
-                return View();
-            }
+            return View(typicalBlock);
         }
 
-        // GET: TypicalBlock/Delete/5
-        public ActionResult Delete(int id)
+        [HttpGet]
+        public ActionResult Delete(int? id)
         {
-            return View();
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            TypicalBlock typicalBlock = typicalBlockService.GetByID(id);
+            if (typicalBlock == null)
+            {
+                return HttpNotFound();
+            }
+            BlockService blockService = new BlockService(typicalBlockService.unitOfWork);
+            TypicalBlockVM typicalBlockVM = new TypicalBlockVM()
+            {
+                Blocks = blockService.Get().Where(x => x.BlockName?.TypicalBlockID == typicalBlock.TypicalBlockID).ToList(),
+                TypicalBlockID = typicalBlock.TypicalBlockID,
+                BlockName = typicalBlock.BlockName
+            };
+            return View(typicalBlockVM);
         }
 
-        // POST: TypicalBlock/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmed(int id)
         {
-            try
+            BlockService blockService = new BlockService(typicalBlockService.unitOfWork);
+            List<Block> blocks = blockService.Get().Where(x => x.BlockName?.TypicalBlockID == id).ToList();
+            for (int i = 0; i < blocks.Count; i++)
             {
-                // TODO: Add delete logic here
+                blocks[i].BlockName = null;
+            }
+            typicalBlockService.Delete(id);
+            typicalBlockService.unitOfWork.Save();
+            return RedirectToAction("Index");
+        }
 
-                return RedirectToAction("Index");
-            }
-            catch
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
             {
-                return View();
+                typicalBlockService.unitOfWork.Dispose();
             }
+            base.Dispose(disposing);
         }
     }
 }

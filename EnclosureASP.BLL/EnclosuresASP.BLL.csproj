@@ -7,8 +7,8 @@
     <ProjectGuid>{1F607E75-1C17-4D72-81D9-7DC1A222550E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EnclosureASP.BLL</RootNamespace>
-    <AssemblyName>EnclosureASP.BLL</AssemblyName>
+    <RootNamespace>EnclosuresASP.BLL</RootNamespace>
+    <AssemblyName>EnclosuresASP.BLL</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -79,10 +79,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Infrastructure\AppRoleManager.cs" />
     <Compile Include="Infrastructure\AppUserManager.cs" />
     <Compile Include="MIME\MIME.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\ACSService.cs" />
     <Compile Include="Services\BlockService.cs" />
     <Compile Include="Services\EmployeService.cs" />
     <Compile Include="Services\FileService.cs" />

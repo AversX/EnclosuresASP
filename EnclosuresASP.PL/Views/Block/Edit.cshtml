@@ -1,7 +1,7 @@
-﻿@model EnclosuresASP.PL.Models.EmployeVM
+﻿@model EnclosuresASP.PL.Models.BlockVM
 
 @{
-    ViewBag.Title = "Редактирование записи о сотруднике";
+    ViewBag.Title = "Редактирование блока";
 }
 
 @using (Html.BeginForm())
@@ -9,25 +9,24 @@
     @Html.AntiForgeryToken()
 
     <div class="form-horizontal">
-        <h4>Редактирование записи о сотруднике</h4>
+        <h4>Редактирование блока</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.EmployeID)
         <input type="hidden" name="returnUrl" value="@ViewBag.returnUrl" />
+        @Html.HiddenFor(m => m.BlockID)
 
         <div class="form-group">
-            @Html.Label("ФИО", htmlAttributes: new { @class = "control-label col-md-4" })
+            @Html.Label("UID", htmlAttributes: new { @class = "control-label col-md-4" })
             <div class="col-md-8">
-                @Html.EditorFor(model => model.FullName, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.FullName, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.UID, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.UID, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.Label("Должность", htmlAttributes: new { @class = "control-label col-md-4" })
-            <div class="col-md-8">
-                @Html.DropDownListFor(m => Model.PositionID, Model.Positions, "Выберите должность...", htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(m => m.PositionID, "", new { @class = "text-danger" })
+            @Html.Label("Тип блока", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(m => m.TypicalBlockID, Model.TypicalBlocks, "Выберите тип блока...", htmlAttributes: new { @class = "form-control" })
             </div>
         </div>
 

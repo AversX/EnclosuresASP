@@ -23,7 +23,6 @@ namespace EnclosuresASP.DAL.EF
         public DbSet<Enclosure> Enclosures { get; set; }
         public DbSet<Employe> Employes { get; set; }
         public DbSet<Position> Positions { get; set; }
-        public DbSet<ACS> ACSs { get; set; }
         public DbSet<EnclosureFile> EnclosureFiles { get; set; }
         public DbSet<Block> Blocks { get; set; }
         public DbSet<TypicalBlock> TBlocks { get; set; }

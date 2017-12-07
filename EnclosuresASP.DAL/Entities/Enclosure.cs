@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Data.Entity;
 using System.ComponentModel.DataAnnotations;
 
 namespace EnclosuresASP.DAL.Entities
@@ -21,7 +20,6 @@ namespace EnclosuresASP.DAL.Entities
         public string Username { get; set; }
 
         public virtual ICollection<EnclosureFile> Files { get; set; }
-        public virtual ICollection<ACS> ACSs { get; set; }
         public virtual ICollection<Block> Blocks { get; set; }
     }
 }

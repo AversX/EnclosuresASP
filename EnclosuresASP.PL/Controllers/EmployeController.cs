@@ -1,93 +1,56 @@
-﻿using System.Web.Mvc;
-using EnclosuresASP.BLL.Services;
+﻿using EnclosuresASP.BLL.Services;
 using EnclosuresASP.DAL.Entities;
-using System.Data.Entity.Infrastructure;
+using EnclosuresASP.PL.ActivityTrack;
+using EnclosuresASP.PL.Models;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Web.Mvc;
 
 namespace EnclosuresASP.PL.Controllers
 {
+    [Authorize]
+    [TraceFilter]
     public class EmployeController : Controller
     {
         EmployeService employeService = new EmployeService();
 
-        // GET: Employe
+        [HttpGet]
         public ActionResult Index()
         {
             return View(employeService.Get());
         }
 
-        // GET: Employe/Create
+        [HttpGet]
         public ActionResult Create()
         {
-            return View();
+            EmployeVM employeVM = new EmployeVM();
+            PopulatePositionList(employeVM);
+            return View(employeVM);
         }
 
-        // POST: Employe/Create
         [HttpPost]
-        public ActionResult Create(Employe employe)
-        {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    employeService.Insert(employe);
-                    employeService.unitOfWork.Save();
-                    return RedirectToAction("Index");
-                }
-            }
-            catch (RetryLimitExceededException /* dex */)
-            {
-                //Log the error (uncomment dex variable name and add a line here to write a log.)
-                ModelState.AddModelError("", "Невозможно сохранить данные. Попробуйте снова, и если проблема останется, обратиатесь к вашему системному администратору.");
-            }
-            //PopulateDepartmentsDropDownList(course.DepartmentID);
-            return View(employe);
-        }
-
-        // GET: Enclosure/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Employe employe = employeService.GetByID(id);
-            if (employe == null)
-            {
-                return HttpNotFound();
-            }
-            //PopulateDepartmentsDropDownList(course.DepartmentID);
-            return View(employe);
-        }
-
-        [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public ActionResult EditPost(int? id)
+        public ActionResult Create(EmployeVM employeVM)
         {
-            if (id == null)
+            if (ModelState.IsValid)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Employe employeToUpdate = employeService.GetByID(id);
-            if (TryUpdateModel(employeToUpdate))
-            {
-                try
+                PositionService positionService = new PositionService(employeService.unitOfWork);
+                Employe employe = new Employe()
                 {
-                    employeService.unitOfWork.Save();
-                    return RedirectToAction("Index");
-                }
-                catch (RetryLimitExceededException /* dex */)
-                {
-                    //Log the error (uncomment dex variable name and add a line here to write a log.
-                    ModelState.AddModelError("", "Невозможно сохранить данные. Попробуйте снова, и если проблема останется, обратиатесь к вашему системному администратору.");
-                }
+                    FullName = employeVM.FullName,
+                    EmpPosition = employeVM.PositionID == null ? null : positionService.GetByID(employeVM.PositionID)
+                };
+                employeService.Insert(employe);
+                employeService.unitOfWork.Save();
+                return RedirectToAction("Index");
             }
-            //PopulateDepartmentsDropDownList(courseToUpdate.DepartmentID);
-            return View(employeToUpdate);
+            PopulatePositionList(employeVM);
+            return View(employeVM);
         }
 
-        // GET: Course/Delete/5
-        public ActionResult Delete(int? id)
+        [HttpGet]
+        public ActionResult Edit(int? id, string returnUrl)
         {
             if (id == null)
             {
@@ -98,17 +61,83 @@ namespace EnclosuresASP.PL.Controllers
             {
                 return HttpNotFound();
             }
-            return View(employe);
+            EmployeVM employeVM = new EmployeVM()
+            {
+                FullName = employe.FullName,
+                EmployeID = employe.EmployeID,
+            };
+            if (employe.EmpPosition == null)
+            {
+                employeVM.PositionID = null;
+                PopulatePositionList(employeVM);
+            }
+            else
+            {
+                employeVM.PositionID = employe.EmpPosition.PositionID;
+                PopulatePositionList(employeVM, employe.EmpPosition.PositionID);
+            }
+            
+            ViewBag.returnUrl = returnUrl;
+            return View(employeVM);
         }
 
-        // POST: Course/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(EmployeVM employeVM, string returnUrl)
+        {
+            if (ModelState.IsValid)
+            {
+                PositionService positionService = new PositionService(employeService.unitOfWork);
+                Employe employeToUpdate = employeService.GetByID(employeVM.EmployeID);
+
+                employeToUpdate.FullName = employeVM.FullName;
+                employeToUpdate.EmpPosition = employeVM.PositionID == null ? null : positionService.GetByID(employeVM.PositionID);
+
+                employeService.Update(employeToUpdate);
+                employeService.unitOfWork.Save();
+                return Redirect(returnUrl);
+            }
+            PopulatePositionList(employeVM, employeVM.PositionID);
+            return View(employeVM);
+        }
+
+        [HttpGet]
+        public ActionResult Delete(int? id, string returnUrl)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Employe employe = employeService.GetByID(id);
+            if (employe == null)
+            {
+                return HttpNotFound();
+            }
+            EnclosureService enclosureService = new EnclosureService(employeService.unitOfWork);
+            EmployeVM employeVM = new EmployeVM
+            {
+                Enclosures = enclosureService.Get().Where(x => x.Supervisor?.EmployeID == id).ToList(),
+                EmployeID = employe.EmployeID,
+                EmpPosition = employe.EmpPosition ?? null,
+                FullName = employe.FullName
+            };
+            ViewBag.returnUrl = returnUrl;
+            return View(employeVM);
+        }
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult DeleteConfirmed(int id, string returnUrl)
         {
+            EnclosureService enclosureService = new EnclosureService(employeService.unitOfWork);
+            List<Enclosure> enclosures = enclosureService.Get().Where(x => x.Supervisor?.EmployeID == id).ToList();
+            for (int i=0; i<enclosures.Count; i++)
+            {
+                enclosures[i].Supervisor = null;
+            }
             employeService.Delete(id);
             employeService.unitOfWork.Save();
-            return RedirectToAction("Index");
+            return Redirect(returnUrl);
         }
 
         protected override void Dispose(bool disposing)
@@ -119,5 +148,14 @@ namespace EnclosuresASP.PL.Controllers
             }
             base.Dispose(disposing);
         }
+
+        #region Privates
+        private void PopulatePositionList(EmployeVM empVM, object selectedPosition = null)
+        {
+            PositionService positionService = new PositionService(employeService.unitOfWork);
+            SelectList posSelectList = new SelectList(positionService.Get().Select(pos => new SelectListItem { Text = pos.PosName, Value = pos.PositionID.ToString() }), selectedPosition);
+            empVM.Positions = (IEnumerable<SelectListItem>)(posSelectList.Items);
+        }
+        #endregion
     }
 }

@@ -1,103 +1,180 @@
-﻿@model EnclosuresASP.DAL.Entities.Enclosure
+﻿<style type="text/css">
+    .span-center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+
+@model EnclosuresASP.DAL.Entities.Enclosure
 
 @{
-    ViewBag.Title = "Delete";
+    ViewBag.Title = "Шкаф №" + Model.Number;
 }
 
-<h2>Delete</h2>
-
-<h3>Вы уверены, что хотите удалить запись?</h3>
-<div>
-    <h4>Шкаф</h4>
+<div class="row">
+    <h4>Удалить шкаф №@Model.Number?</h4>
     <hr />
-    <dl class="dl-horizontal">
-        <dt>Номер</dt>
-        <dd>
-            @Html.DisplayFor(model => model.Number)
-           
-        </dd>
-        <br />
 
-        <dt>Принял</dt>
-        <dd>
-            @{
-                string s = Model.Supervisor.EmpPosition.PosName + ", " + Model.Supervisor.FullName;
-                @Html.Display(s)
-            }
-        </dd>
-        <br />
+    <div class="form-horizontal">
+        @Html.HiddenFor(m => m.EnclosureID)
 
-        <dt>Блоки</dt>
-        <dd>
-            <table class="table">
-                <tr>
-                    <th>Наименование</th>
-                    <th>УИД</th>
-                </tr>
-                @foreach (var item in Model.Blocks)
+        <div class="form-group">
+            @Html.Label("Номер", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.DisplayFor(m => m.Number, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Принял", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.DisplayFor(m => Model.Supervisor.EmpPosition.PosName, new { htmlAttributes = new { @class = "form-control" } })
+                <br />
+                @Html.DisplayFor(m => Model.Supervisor.FullName, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Root-логин", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @if (Model.RootLogin?.Length > 0)
                 {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.BlockName.BlockName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.UID)
-                        </td>
-                    </tr>
+                    @Html.DisplayFor(model => model.RootLogin);
                 }
-
-            </table>
-        </dd>
-        <br />
-
-        <dt>СКУД</dt>
-        <dd>
-            <table class="table">
-                <tr>
-                    <th>ID</th>
-                    <th>Код</th>
-                </tr>
-                @foreach (var item in Model.ACSs)
+                else
                 {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.ACSID)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Code)
-                        </td>
-                    </tr>
+                    @Html.Label("Root-логин не присвоен");
                 }
-            </table>
-        </dd>
-        <br />
+            </div>
+        </div>
 
-        <dt>Прошивка</dt>
-        <dd>
-                @{
-                    if (Model.FirmwareFile != null)
+        <div class="form-group">
+            @Html.Label("Root-пароль", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @if (Model.RootPassword?.Length > 0)
+                {
+                    @Html.DisplayFor(model => model.RootPassword);
+                }
+                else
+                {
+                    @Html.Label("Root-пароль не присвоен");
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-5 col-md-offset-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    Блоки
+                </div>
+                <table class="table table-striped">
+                    <tr>
+                        <th class="text-center">Название</th>
+                        <th class="text-center">УИД</th>
+                    </tr>
+                    @if (Model.Blocks?.Count == 0)
                     {
-                        <td>
-                            @Html.DisplayFor(model => model.FirmwareFilename)
-                        </td>
+                        <tr>
+                            <td colspan="2" class="text-center">Нет ни одного блока</td>
+                        </tr>
                     }
                     else
                     {
-                        <td>
-                            @Html.Label("Файл отсутствует")
-                        </td>
+                        foreach (var item in Model.Blocks)
+                        {
+                            <tr>
+                                <td class="text-center">
+                                    @Html.DisplayFor(modelItem => item.BlockName.BlockName)
+                                </td>
+                                <td class="text-center">
+                                    @Html.DisplayFor(modelItem => item.UID)
+                                </td>
+                            </tr>
+                        }
                     }
-                }
-        </dd>
-        <br />
-
-    @using (Html.BeginForm())
-    {
-        @Html.AntiForgeryToken()
-
-        <div class="form-actions no-color">
-            <input type="submit" value="Delete" class="btn btn-default" /> |
-            @Html.ActionLink("Back to List", "Index")
+                </table>
+            </div>
         </div>
-    }
+    </div>
+
+    <div class="form-group">
+        <div class="form-group">
+            <div class="col-md-offset-3 col-md-5">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        Файлы
+                    </div>
+
+                    <table class="table table-striped">
+                        <tr>
+                            <th class="text-center">Имя</th>
+                            <th class="text-center">Размер</th>
+                        </tr>
+                        @if (Model.Files?.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="2" class="text-center">Не загружено ниодного файла</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (var item in Model.Files)
+                            {
+                                <tr valign="middle">
+                                    <td align="center">
+                                        @Html.DisplayFor(modelItem => item.Filename)
+                                    </td>
+                                    <td align="center">
+                                        @{
+                                            string size;
+                                            if (item.Bytes.Length > 1048576)
+                                            {
+                                                size = System.Math.Round(item.Bytes.Length / 1048576.0, 2) + " МБ";
+                                            }
+                                            else if (item.Bytes.Length > 1024)
+                                            {
+                                                size = System.Math.Round(item.Bytes.Length / 1024.0, 2) + " КБ";
+                                            }
+                                            else
+                                            {
+                                                size = item.Bytes.Length + " Б";
+                                            }
+                                        }
+                                        @Html.DisplayFor(modelItem => size)
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.EnclosureID" />
+            <input type="hidden" name="returnUrl" value="@ViewBag.returnUrl" />
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <div class="btn-group">
+                        <button id="deleteBtn" name="deleteBtn" class="k-primary" type="submit">Удалить</button>
+                        <button id="cancelBtn" name="cancelBtn" class="k-default" type="button" data-url="@ViewBag.returnUrl">Отмена</button>
+                        <script type="text/javascript">
+                            $("#deleteBtn").kendoButton();
+                            $("#cancelBtn").kendoButton().click(function () {
+                                var url = $(this).data('url');
+                                window.location.href = url;
+                            });
+                        </script>
+                    </div>
+                </div>
+            </div>
+        }
+
+        
+    </div>
 </div>

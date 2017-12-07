@@ -34,26 +34,6 @@
     </div>
 </div>
 
-<div class="form-horizontal">
-    <!-- Modal -->
-    <div id="acsModal" class="modal fade" role="dialog">
-        <div class="modal-dialog modal-lg">
-            <!-- Modal content-->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Добавить СКУД</h4>
-                </div>
-                <div class="modal-body">
-                    <p>
-                        <div id="acsModalBody"></div>
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 @using (Html.BeginForm("Edit", "Enclosure", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
@@ -64,7 +44,7 @@
 
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(model => model.EnclosureID)
-
+        <input type="hidden" name="returnUrl" value="@ViewBag.returnUrl" />
         <div class="row">
             <div class="form-group">
                 @Html.Label("Номер", htmlAttributes: new { @class = "control-label col-md-4" })
@@ -78,7 +58,7 @@
                 @Html.Label("Принял", htmlAttributes: new { @class = "control-label col-md-4" })
                 <div class="col-md-8">
                     @Html.DropDownListFor(m => Model.EmployeID, Model.Employes, "Выберите сотрудника...", htmlAttributes: new { @class = "form-control" })
-                    @Html.ValidationMessageFor(m => m.Employes, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(m => m.EmployeID, "", new { @class = "text-danger" })
                 </div>
             </div>
 
@@ -86,7 +66,6 @@
                 @Html.Label("Root логин", htmlAttributes: new { @class = "control-label col-md-4" })
                 <div class="col-md-8">
                     @Html.EditorFor(m => m.RootLogin, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(m => m.RootLogin, "", new { @class = "text-danger" })
                 </div>
             </div>
 
@@ -94,7 +73,6 @@
                 @Html.Label("Root пароль", htmlAttributes: new { @class = "control-label col-md-4" })
                 <div class="col-md-8">
                     @Html.EditorFor(m => m.RootPassword, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(m => m.RootPassword, "", new { @class = "text-danger" })
                 </div>
             </div>
         </div>
@@ -107,7 +85,7 @@
                         Блоки
                     </div>
                     <div id="blocksTable">
-                        @Html.Action("GetBlocks", "Enclosure", new { blocks = Model.BlocksJSON })
+                        @Html.Action("Index", "BlockPartial", new { blocks = Model.BlocksJSON })
                     </div>
                 </div>
             </div>
@@ -115,26 +93,6 @@
             <div class="form-group">
                 <div class="col-md-1">
                     <button id="addBlockBtn" type="button" class="btn btn-primary">Добавить</button>
-                </div>
-            </div>
-        </div>
-
-        @Html.HiddenFor(m => m.ACSsJSON)
-        <div class="row">
-            <div class="col-md-5 col-md-offset-3">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        СКУД
-                    </div>
-                    <div id="acssTable">
-                        @Html.Action("GetACSs", "Enclosure", new { acssJSON = Model.ACSsJSON })
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="col-md-1">
-                    <button id="addACSBtn" type="button" class="btn btn-primary">Добавить</button>
                 </div>
             </div>
         </div>
@@ -150,7 +108,7 @@
             <div class="col-md-offset-2 col-md-10">
                 <div class="btn-group">
                     <button id="submitBtn" name="submitBtn" class="k-primary" type="submit">Применить</button>
-                    <button id="cancelBtn" name="cancelBtn" class="k-default" type="button" data-url="@Url.Action("Index", "Enclosure")">Отмена</button>
+                    <button id="cancelBtn" name="cancelBtn" class="k-default" type="button" data-url="@ViewBag.returnUrl">Отмена</button>
                 </div>
             </div>
         </div>
@@ -158,31 +116,12 @@
 }
 
 <script type="text/javascript">
-    $('.blockEditBtn').kendoButton().click(function () {
-        debugger;
-        var url = $(this).data('url');
-        window.location.href = url;
-        $.get(url, function (data) {
-            $('#blockModalBody').html(data);
-            $('#blockModal').modal('show');
-        });
-    });
-
     $('#addBlockBtn').click(function () {
-        var url = '@Url.Action("CreateBlock", "Enclosure", new { blocks = "VALUE" })';
+        var url = '@Url.Action("Create", "BlockPartial", new { blocks = "VALUE" })';
         url = url.replace("VALUE", $('#BlocksJSON').val());
         $.get(url, function (data) {
             $('#blockModalBody').html(data);
             $('#blockModal').modal('show');
-        });
-    });
-
-    $('#addACSBtn').click(function () {
-        var url = '@Url.Action("CreateACS", "Enclosure", new { acssJSON = "VALUE" })';
-        url = url.replace("VALUE", $('#ACSsJSON').val());
-        $.get(url, function (data) {
-            $('#acsModalBody').html(data);
-            $('#acsModal').modal('show');
         });
     });
 

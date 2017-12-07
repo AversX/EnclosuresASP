@@ -14,12 +14,13 @@ namespace EnclosuresASP.PL.App_Start
         {
             app.CreatePerOwinContext(IdentityContext.Create);
             app.CreatePerOwinContext<AppUserManager>(AppUserManager.Create);
+            app.CreatePerOwinContext<AppRoleManager>(AppRoleManager.Create);
 
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
                 ExpireTimeSpan = /*TimeSpan.FromSeconds(10),*/ TimeSpan.FromMinutes(30),
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
-                LoginPath = new PathString("/Account/Login"),
+                LoginPath = new PathString("/User/Login"),
             });
         }
     }

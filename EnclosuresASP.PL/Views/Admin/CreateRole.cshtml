@@ -1,0 +1,25 @@
+﻿@model EnclosuresASP.DAL.Identity.AppRole
+
+@{
+    ViewBag.Title = "Создание роли";
+}
+
+<p> @Html.ValidationSummary(false, "", new { @class = "text-danger" }) </p>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="form-group">
+        <label>Название</label>
+        @Html.TextBoxFor(x => x.Name, new { @class = "form-control" })
+    </div>
+    <button id="submitBtn" name="submitBtn" class="k-primary" type="submit">Создать</button>
+        <button id="cancelBtn" name="cancelBtn" class="k-default" type="button" data-url="@Url.Action("Roles", "Admin")">Отмена</button>
+}
+
+<script type="text/javascript">
+    $("#submitBtn").kendoButton();
+    $("#cancelBtn").kendoButton().click(function () {
+        var url = $(this).data('url');
+        window.location.href = url;
+    });
+</script>

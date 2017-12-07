@@ -1,13 +1,18 @@
 ﻿@model IEnumerable<EnclosuresASP.DAL.Entities.Employe>
 
 @{
-    ViewBag.Title = "Employes";
+    ViewBag.Title = "Список сотрудников";
 }
 
-<h2>Employes</h2>
-
+<br />
 <p>
-    @Html.ActionLink("Добавить", "Create")
+    <button id="addBtn" name="addBtn" class="k-primary" type="button" data-url="@Url.Action("Create", "Employe")">Добавить</button>
+    <script type="text/javascript">
+        $("#addBtn").kendoButton().click(function () {
+            var url = $(this).data('url');
+            window.location.href = url;
+        });
+    </script>
 </p>
 
 @*@using (Html.BeginForm())
@@ -18,37 +23,58 @@
         </p>
     }*@
 
-<style type="text/css">
-    th, td {
-        text-align: center;
-    }
-</style>
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        Список сотрудников
+    </div>
+    <table class="table table-striped">
 
-<table class="table">
-    <tr>
-        <th>id</th>
-        <th>Ф.И.О.</th>
-        <th>Должность</th>
-        <th></th>
-    </tr>
-
-    @foreach (var item in Model)
-    {
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.EmployeID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FullName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EmpPosition.PosName)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.EmployeID }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.EmployeID })
-            </td>
+            <th class="text-center">ID</th>
+            <th class="text-center">ФИО</th>
+            <th class="text-center">Должность</th>
+            <th></th>
         </tr>
-                }
 
-</table>
+        @if (Model.Count() == 0)
+        {
+            <tr>
+                <td colspan="4" class="text-center">Нет ни одной записи</td>
+            </tr>
+        }
+        else
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td class="text-center">
+                        @Html.DisplayFor(modelItem => item.EmployeID)
+                    </td>
+                    <td class="text-center">
+                        @Html.DisplayFor(modelItem => item.FullName)
+                    </td>
+                    <td class="text-center">
+                        @Html.DisplayFor(modelItem => item.EmpPosition.PosName)
+                    </td>
+                    <td class="text-center">
+                        @{
+                            string editBtnName = "editBtn" + item.EmployeID;
+                            string detailsBtnName = "detailsBtn" + item.EmployeID;
+                            string deleteBtnName = "deleteBtn" + item.EmployeID;
+                            <button id=@editBtnName name=@editBtnName class="k-primary" type="button" data-url="@Url.Action("Edit", "Employe", new { id = item.EmployeID, returnUrl = HttpContext.Current.Request.Url.AbsoluteUri   })">Редактировать</button>
+
+                            <button id=@deleteBtnName name=@deleteBtnName class="k-primary" type="button" data-url="@Url.Action("Delete", "Employe", new { id = item.EmployeID, returnUrl = HttpContext.Current.Request.Url.AbsoluteUri  })">Удалить</button>
+
+                            <script type="text/javascript">
+                                $('.k-primary').kendoButton().click(function () {
+                                    var url = $(this).data('url');
+                                    window.location.href = url;
+                                });
+                            </script>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </table>
+</div>

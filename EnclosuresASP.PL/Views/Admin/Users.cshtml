@@ -1,0 +1,63 @@
+﻿@using EnclosuresASP.DAL.Identity;
+@model IEnumerable<AppUser>
+
+@{
+    ViewBag.Title = "Администрирование";
+}
+
+<br />
+<p>
+    <button id="addBtn" name="addBtn" class="k-primary" type="button" data-url="@Url.Action("CreateUser", "Admin")">Добавить</button>
+    <script type="text/javascript">
+        $("#addBtn").kendoButton().click(function () {
+            var url = $(this).data('url');
+            window.location.href = url;
+        });
+    </script>
+</p>
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        Учетные записи
+    </div>
+    <table class="table table-striped">
+        <tr>
+            <th>Id</th>
+            <th>Имя</th>
+            <th></th>
+        </tr>
+        @if (Model.Count() == 0)
+        {
+            <tr>
+                <td colspan="4" class="text-center">Нет ни одной учетной записи</td>
+            </tr>
+        }
+        else
+        {
+            foreach (AppUser user in Model)
+            {
+                <tr>
+                    <td>@user.Id</td>
+                    <td>@user.UserName</td>
+                    <td>
+                        @{
+                            string editBtnName = "editBtn" + user.Id;
+                            string detailsBtnName = "detailsBtn" + user.Id;
+                            string deleteBtnName = "deleteBtn" + user.Id;
+                            <button id=@editBtnName name=@editBtnName class="k-primary" type="button" data-url="@Url.Action("EditUser", "Admin", new { id = user.Id})">Редактировать</button>
+
+                            <button id=@deleteBtnName name=@deleteBtnName class="k-primary" type="button" data-url="@Url.Action("DeleteUser", "Admin", new { id = user.Id})">Удалить</button>
+
+                            <script type="text/javascript">
+                                $('.k-primary').kendoButton().click(function () {
+                                    var url = $(this).data('url');
+                                    window.location.href = url;
+                                });
+                            </script>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </table>
+</div>

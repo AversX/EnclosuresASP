@@ -9,7 +9,6 @@ namespace EnclosuresASP.DAL.EF
         private GenericRepository<Enclosure> enclosureRepository;
         private GenericRepository<Employe> employeRepository;
         private GenericRepository<Position> positionRepository;
-        private GenericRepository<ACS> acsRepository;
         private GenericRepository<EnclosureFile> enclosureFilesRepository;
         private GenericRepository<Block> blockRepository;
         private GenericRepository<TypicalBlock> typicalBlockRepository;
@@ -35,14 +34,6 @@ namespace EnclosuresASP.DAL.EF
             get
             {
                 return this.positionRepository ?? new GenericRepository<Position>(context);
-            }
-        }
-
-        public GenericRepository<ACS> ACSRepository
-        {
-            get
-            {
-                return this.acsRepository ?? new GenericRepository<ACS>(context);
             }
         }
 

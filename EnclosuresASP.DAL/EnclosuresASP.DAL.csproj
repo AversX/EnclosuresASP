@@ -84,13 +84,13 @@
     <Compile Include="EF\GenericRepository.cs" />
     <Compile Include="EF\IdentityContext.cs" />
     <Compile Include="EF\UnitOfWork.cs" />
-    <Compile Include="Entities\ACS.cs" />
     <Compile Include="Entities\Block.cs" />
     <Compile Include="Entities\Employe.cs" />
     <Compile Include="Entities\Enclosure.cs" />
     <Compile Include="Entities\EnclosureFile.cs" />
     <Compile Include="Entities\Position.cs" />
     <Compile Include="Entities\TypicalBlock.cs" />
+    <Compile Include="Identity\AppRole.cs" />
     <Compile Include="Identity\AppUser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -99,19 +99,6 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="docs\MySqlCommand.xml" />
-    <Content Include="docs\MySqlCommandBuilder.xml" />
-    <Content Include="docs\MySqlConnection.xml" />
-    <Content Include="docs\MySqlConnectionStringBuilder.xml" />
-    <Content Include="docs\MySqlDataAdapter.xml" />
-    <Content Include="docs\MySqlDataReader.xml" />
-    <Content Include="docs\MySqlException.xml" />
-    <Content Include="docs\MySqlHelper.xml" />
-    <Content Include="docs\MySqlParameter.xml" />
-    <Content Include="docs\MySqlParameterCollection.xml" />
-    <Content Include="docs\MySqlTransaction.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,13 +1,18 @@
-﻿@model IEnumerable<EnclosuresASP.DAL.Entities.Employe>
+﻿@model IEnumerable<EnclosuresASP.DAL.Entities.TypicalBlock>
 
 @{
-    ViewBag.Title = "Employes";
+    ViewBag.Title = "Список типовых блоков";
 }
 
-<h2>Employes</h2>
-
+<br />
 <p>
-    @Html.ActionLink("Добавить", "Create")
+    <button id="addBtn" name="addBtn" class="k-primary" type="button" data-url="@Url.Action("Create", "TypicalBlock")">Добавить</button>
+    <script type="text/javascript">
+        $("#addBtn").kendoButton().click(function () {
+            var url = $(this).data('url');
+            window.location.href = url;
+        });
+    </script>
 </p>
 
 @*@using (Html.BeginForm())
@@ -18,38 +23,54 @@
         </p>
     }*@
 
-<style type="text/css">
-    th, td {
-        text-align: center;
-    }
-</style>
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        Список типовых блоков
+    </div>
+    <table class="table table-striped">
 
-<table class="table">
-    <tr>
-        <th>id</th>
-        <th>Ф.И.О.</th>
-        <th>Должность</th>
-        <th></th>
-    </tr>
-
-    @foreach (var item in Model)
-    {
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.EmployeID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FullName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FullName)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.EmployeID }) |
-                @Html.ActionLink("Details", "Details", new { id = item.EmployeID }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.EmployeID })
-            </td>
+            <th class="text-center">ID</th>
+            <th class="text-center">Наименование</th>
+            <th></th>
         </tr>
-                }
 
-</table>
+        @if (Model.Count() == 0)
+        {
+            <tr>
+                <td colspan="2" class="text-center">Нет ни одной записи</td>
+            </tr>
+        }
+        else
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td class="text-center">
+                        @Html.DisplayFor(modelItem => item.TypicalBlockID)
+                    </td>
+                    <td class="text-center">
+                        @Html.DisplayFor(modelItem => item.BlockName)
+                    </td>
+                    <td class="text-center">
+                        @{
+                            string editBtnName = "editBtn" + item.TypicalBlockID;
+                            string detailsBtnName = "detailsBtn" + item.TypicalBlockID;
+                            string deleteBtnName = "deleteBtn" + item.TypicalBlockID;
+                            <button id=@editBtnName name=@editBtnName class="k-primary" type="button" data-url="@Url.Action("Edit", "TypicalBlock", new { id = item.TypicalBlockID })">Редактировать</button>
+
+                            <button id=@deleteBtnName name=@deleteBtnName class="k-primary" type="button" data-url="@Url.Action("Delete", "TypicalBlock", new { id = item.TypicalBlockID })">Удалить</button>
+
+                            <script type="text/javascript">
+                                $('.k-primary').kendoButton().click(function () {
+                                    var url = $(this).data('url');
+                                    window.location.href = url;
+                                });
+                            </script>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </table>
+</div>

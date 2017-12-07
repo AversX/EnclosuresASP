@@ -7,13 +7,22 @@ using EnclosuresASP.DAL.Entities;
 
 namespace EnclosuresASP.BLL.Services
 {
-    class PositionService
+    public class PositionService
     {
-        private UnitOfWork unitOfWork = new UnitOfWork();
+        public UnitOfWork unitOfWork;
+
+        public PositionService()
+        {
+            unitOfWork = new UnitOfWork();
+        }
+
+        public PositionService(UnitOfWork _unitOfWork)
+        {
+            unitOfWork = _unitOfWork;
+        }
 
         public virtual IEnumerable<Position> Get(Expression<Func<Position, bool>> filter = null, Func<IQueryable<Position>, IOrderedQueryable<Position>> orderBy = null, string includeProperties = "")
         {
-
             return unitOfWork.PositionRepository.Get(filter, orderBy, includeProperties);
         }
 

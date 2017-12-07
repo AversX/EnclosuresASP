@@ -9,7 +9,7 @@ namespace EnclosuresASP.BLL.Services
 {
     public class TypicalBlockService
     {
-        private UnitOfWork unitOfWork = new UnitOfWork();
+        public UnitOfWork unitOfWork = new UnitOfWork();
 
         public TypicalBlockService()
         {

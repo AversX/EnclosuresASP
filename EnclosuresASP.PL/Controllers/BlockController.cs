@@ -1,90 +1,145 @@
-﻿using System;
+﻿using EnclosuresASP.BLL.Services;
+using EnclosuresASP.DAL.Entities;
+using EnclosuresASP.PL.ActivityTrack;
+using EnclosuresASP.PL.Models;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using System.Net;
 using System.Web.Mvc;
-using System.Threading.Tasks;
 
 namespace EnclosuresASP.PL.Controllers
 {
+    [Authorize]
+    [TraceFilter]
     public class BlockController : Controller
     {
-        // GET: Block
+        BlockService blockService = new BlockService();
+
+        [HttpGet]
         public ActionResult Index()
         {
-            return View();
+            return View(blockService.Get());
         }
 
-        // GET: Block/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: Block/Create
+        [HttpGet]
         public ActionResult Create()
         {
-            return View();
+            BlockVM blockVM = new BlockVM();
+            PopulateBlockList(blockVM);
+            return View(blockVM);
         }
 
-        // POST: Block/Create
         [HttpPost]
-        public ActionResult Create(FormCollection collection)
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(BlockVM blockVM)
         {
-            try
+            if (ModelState.IsValid)
             {
-                // TODO: Add insert logic here
+                TypicalBlockService typicalBlockService = new TypicalBlockService();
+                Block block = new Block()
+                {
+                    UID = blockVM.UID,
+                    EnclosureID = blockVM.EnclosureID,
+                    BlockName = blockVM.TypicalBlockID == null ? null : typicalBlockService.GetByID(blockVM.TypicalBlockID)
+                };
 
+                blockService.Insert(block);
+                blockService.unitOfWork.Save();
                 return RedirectToAction("Index");
             }
-            catch
-            {
-                return View();
-            }
+            PopulateBlockList(blockVM);
+            return View(blockVM);
         }
 
-        // GET: Block/Edit/5
-        public ActionResult Edit(int id)
+        [HttpGet]
+        public ActionResult Edit(int? id, string returnUrl)
         {
-            return View();
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Block block = blockService.GetByID(id);
+            if (block == null)
+            {
+                return HttpNotFound();
+            }
+            BlockVM blockVM = new BlockVM()
+            {
+                BlockID = block.BlockID,
+                UID = block.UID
+            };
+            if (block.BlockName == null)
+            {
+                blockVM.TypicalBlockID = null;
+                PopulateBlockList(blockVM);
+            }
+            else
+            {
+                blockVM.TypicalBlockID = block.BlockName.TypicalBlockID;
+                PopulateBlockList(blockVM, blockVM.TypicalBlockID);
+            }
+            ViewBag.returnUrl = returnUrl;
+            return View(blockVM);
         }
 
-        // POST: Block/Edit/5
         [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(BlockVM blockVM, string returnUrl)
         {
-            try
+            if (ModelState.IsValid)
             {
-                // TODO: Add update logic here
+                TypicalBlockService typicalBlockService = new TypicalBlockService();
+                Block blockToUpdate = blockService.GetByID(blockVM.BlockID);
 
-                return RedirectToAction("Index");
+                blockToUpdate.UID = blockVM.UID;
+                blockToUpdate.BlockName = blockVM.TypicalBlockID == null ? null : typicalBlockService.GetByID(blockVM.TypicalBlockID);
+
+                blockService.Update(blockToUpdate);
+                blockService.unitOfWork.Save();
+                return Redirect(returnUrl);
             }
-            catch
-            {
-                return View();
-            }
+            PopulateBlockList(blockVM, blockVM.TypicalBlockID);
+            return View(blockVM);
         }
 
-        // GET: Block/Delete/5
-        public ActionResult Delete(int id)
+        [HttpGet]
+        public ActionResult Delete(int? id, string returnUrl)
         {
-            return View();
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Block block = blockService.GetByID(id);
+            if (block == null)
+            {
+                return HttpNotFound();
+            }
+            BlockVM blockVM = new BlockVM()
+            {
+                UID = block.UID,
+                BlockGuid = block.BlockGuid,
+                BlockName = block.BlockName
+            };
+            ViewBag.returnUrl = returnUrl;
+            return View(blockVM);
         }
 
-        // POST: Block/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmed(int id, string returnUrl)
         {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
+            blockService.Delete(id);
+            blockService.unitOfWork.Save();
+            return Redirect(returnUrl);
         }
+
+        #region Privates
+        private void PopulateBlockList(BlockVM blockVM, object selectedBlocks = null)
+        {
+            TypicalBlockService typicalBlock = new TypicalBlockService();
+            SelectList tBlockSelectList = new SelectList(typicalBlock.Get().Select(emp => new SelectListItem { Text = emp.BlockName, Value = emp.TypicalBlockID.ToString() }), selectedBlocks);
+            blockVM.TypicalBlocks = (IEnumerable<SelectListItem>)(tBlockSelectList.Items);
+        }
+        #endregion
     }
 }

@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EnclosuresASP.DAL.Entities
 {
@@ -11,5 +13,12 @@ namespace EnclosuresASP.DAL.Entities
         public int EnclosureID { get; set; }
 
         public virtual TypicalBlock BlockName { get; set; }
+
+        public Guid BlockGuid { get; set; }
+
+        public Block()
+        {
+            BlockGuid = Guid.NewGuid();
+        }
     }
 }

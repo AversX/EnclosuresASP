@@ -1,39 +1,173 @@
-﻿@model EnclosuresASP.DAL.Entities.Employe
+﻿<style type="text/css">
+    .span-center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .icon {
+        width: 32px;
+        height: 32px;
+        float: left;
+        background: url(../Content/kendo/Bootstrap/sprite_2x.png) no-repeat;
+    }
+
+    .icon-checked {
+        background-position: -64px -64px;
+    }
+
+    .icon-unchecked {
+        background-position: -96px -96px;
+    }
+</style>
+
+@model EnclosuresASP.PL.Models.EmployeVM
 
 @{
-    ViewBag.Title = "Delete";
+    ViewBag.Title = "Удаление записи";
 }
 
-<h2>Delete</h2>
-
-<h3>Вы уверены, что хотите удалить запись?</h3>
-<div>
-    <h4>Сотрудник</h4>
+<div class="row">
+    <h4>Удалить запись о сотруднике?</h4>
     <hr />
-    <dl class="dl-horizontal">
-        <dt>ID</dt>
-        <dd>
-            @Html.DisplayFor(model => model.EmployeID)
-        </dd>
 
-        <dt>Ф.И.О.</dt>
-        <dd>
-            @Html.DisplayFor(model => model.FullName)
-        </dd>
+    <div class="form-horizontal">
+        @Html.HiddenFor(m => m.EmployeID)
+        <input type="hidden" name="returnUrl" value="@ViewBag.returnUrl" />
 
-        <dt>Должность</dt>
-        <dd>
-            @Html.DisplayFor(model => model.EmpPosition.PosName)
-        </dd>
-    </dl>
+        <div class="form-group">
+            @Html.Label("ID", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.DisplayFor(m => m.EmployeID, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
 
+        <div class="form-group">
+            @Html.Label("ФИО", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.DisplayFor(m => m.FullName, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Должность", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.DisplayFor(m => m.EmpPosition.PosName, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+    </div>
+    @{
+        if (Model.Enclosures?.Count() > 0)
+        {
+            <p class="bg-danger">На этого сотрудника есть ссылки в других записях. Удаление записи о сотруднике приведёт к потере информации, ссылающейся на эту запись.</p>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    Шкафы, принятые сотрудником
+                </div>
+                <table class="table table-striped">
+
+                    <tr>
+                        <th class="text-center">Номер</th>
+                        <th class="text-center">Root-аккаунт</th>
+                        <th class="text-center">Блоки</th>
+                        <th class="text-center">Файлы</th>
+                        <th></th>
+                    </tr>
+
+                    @if (Model.Enclosures.Count() == 0)
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center">Нет ни одной записи</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var item in Model.Enclosures)
+                        {
+                            <tr>
+                                <td class="text-center">
+                                    @Html.DisplayFor(modelItem => item.Number)
+                                </td>
+                                @{
+                                    if (item.RootLogin != null || item.RootPassword != null)
+                                    {
+                                        if ((item.RootLogin != null && item.RootLogin.Length > 0) || (item.RootPassword != null && item.RootPassword.Length > 0))
+                                        {
+                                            <td>
+                                                <div class="span-center">
+                                                    <span class="icon icon-checked"></span>
+                                                </div>
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td>
+                                                <div class="span-center">
+                                                    <span class="icon icon-unchecked"></span>
+                                                </div>
+                                            </td>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <td>
+                                            <div class="span-center">
+                                                <span class="icon icon-unchecked"></span>
+                                            </div>
+                                        </td>
+                                    }
+                                }
+                                <td class="text-center">
+                                    @Html.DisplayFor(modelItem => item.Blocks.Count)
+                                </td>
+                                <td class="text-center">
+                                    @Html.DisplayFor(modelItem => item.Files.Count)
+                                </td>
+
+                                <td class="text-center">
+                                    @{
+                                        string editBtnName = "editBtn" + item.EnclosureID;
+                                        string detailsBtnName = "detailsBtn" + item.EnclosureID;
+                                        string deleteBtnName = "deleteBtn" + item.EnclosureID;
+                                        <button id=@editBtnName name=@editBtnName class="k-primary" type="button" data-url="@Url.Action("Edit", "Enclosure", new { id = item.EnclosureID, returnUrl = HttpContext.Current.Request.Url.AbsoluteUri })">Редактировать</button>
+
+                                        <button id=@deleteBtnName name=@deleteBtnName class="k-primary" type="button" data-url="@Url.Action("Delete", "Enclosure", new { id = item.EnclosureID, returnUrl = HttpContext.Current.Request.Url.AbsoluteUri })">Удалить</button>
+
+                                        <script type="text/javascript">
+                                            $('.k-primary').kendoButton().click(function () {
+                                                var url = $(this).data('url');
+                                                window.location.href = url;
+                                            });
+                                        </script>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </table>
+            </div>
+        }
+    }
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
 
-        <div class="form-actions no-color">
-            <input type="submit" value="Delete" class="btn btn-default" /> |
-            @Html.ActionLink("Back to List", "Index")
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="btn-group">
+                    <button id="deleteBtn" name="deleteBtn" class="k-primary" type="submit">Удалить</button>
+                    <button id="cancelBtn" name="cancelBtn" class="k-default" type="button" data-url="@ViewBag.returnUrl">Отмена</button>
+                    <script type="text/javascript">
+                        $("#deleteBtn").kendoButton();
+                        $("#cancelBtn").kendoButton().click(function () {
+                            var url = $(this).data('url');
+                            window.location.href = url;
+                        });
+                    </script>
+                </div>
+            </div>
         </div>
     }
+
+
 </div>
