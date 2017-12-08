@@ -45,7 +45,6 @@
                             string detailsBtnName = "detailsBtn" + user.Id;
                             string deleteBtnName = "deleteBtn" + user.Id;
                             <button id=@editBtnName name=@editBtnName class="k-primary" type="button" data-url="@Url.Action("EditUser", "Admin", new { id = user.Id})">Редактировать</button>
-
                             <button id=@deleteBtnName name=@deleteBtnName class="k-primary" type="button" data-url="@Url.Action("DeleteUser", "Admin", new { id = user.Id})">Удалить</button>
 
                             <script type="text/javascript">

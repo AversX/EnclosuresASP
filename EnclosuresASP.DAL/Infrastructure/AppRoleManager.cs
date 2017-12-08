@@ -1,12 +1,12 @@
-﻿using System;
+﻿using EnclosuresASP.DAL.EF;
+using EnclosuresASP.DAL.Identity;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
-using EnclosuresASP.DAL.Identity;
-using EnclosuresASP.DAL.EF;
+using System;
 
-namespace EnclosuresASP.BLL.Infrastructure
+namespace EnclosuresASP.DAL.Infrastructure
 {
     public class AppRoleManager : RoleManager<AppRole>, IDisposable
     {

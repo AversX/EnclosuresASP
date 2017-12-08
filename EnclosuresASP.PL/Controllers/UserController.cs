@@ -1,4 +1,4 @@
-﻿using EnclosuresASP.BLL.Infrastructure;
+﻿using EnclosuresASP.DAL.Infrastructure;
 using EnclosuresASP.DAL.Identity;
 using EnclosuresASP.PL.Models;
 using Microsoft.AspNet.Identity;

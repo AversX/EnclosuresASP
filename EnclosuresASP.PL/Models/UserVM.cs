@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
+using EnclosuresASP.DAL.Identity;
 
 namespace EnclosuresASP.PL.Models
 {
@@ -11,5 +14,10 @@ namespace EnclosuresASP.PL.Models
 
         [Required]
         public string Password { get; set; }
+
+        [Required]
+        public List<string> RoleIDs { get; set; }
+
+        public List<AppRole> Roles { get; set; }
     }
 }

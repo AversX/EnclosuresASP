@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using EnclosuresASP.DAL.EF;
+using EnclosuresASP.DAL.Identity;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
-using EnclosuresASP.DAL.Identity;
-using EnclosuresASP.DAL.EF;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 
-namespace EnclosuresASP.BLL.Infrastructure
+namespace EnclosuresASP.DAL.Infrastructure
 {
     public class AppUserManager : UserManager<AppUser>
     {

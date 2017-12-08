@@ -9,7 +9,7 @@ namespace EnclosuresASP.DAL.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
         }
 
         protected override void Seed(EnclosuresASP.DAL.EF.DataContext context)

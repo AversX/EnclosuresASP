@@ -79,8 +79,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Infrastructure\AppRoleManager.cs" />
-    <Compile Include="Infrastructure\AppUserManager.cs" />
     <Compile Include="MIME\MIME.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\BlockService.cs" />
@@ -91,15 +89,14 @@
     <Compile Include="Services\TypicalBlockService.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EnclosuresASP.DAL\EnclosuresASP.DAL.csproj">
-      <Project>{542a9307-12aa-4c8d-a733-351634e7e5f8}</Project>
-      <Name>EnclosuresASP.DAL</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\EnclosuresASP.DAL\EnclosuresASP.DAL.csproj">
+      <Project>{caef7817-7f8c-4752-a823-b91312a98e75}</Project>
+      <Name>EnclosuresASP.DAL</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

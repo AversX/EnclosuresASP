@@ -1,26 +1,53 @@
-﻿@model EnclosuresASP.PL.Models.UserVM
+﻿@using EnclosuresASP.DAL.Identity;
+@model EnclosuresASP.PL.Models.UserVM
+
 @{
     ViewBag.Title = "Редактирование пользователя";
 }
 
-
 <p> @Html.ValidationSummary(false, "", new { @class = "text-danger" }) </p>
-<div class="form-group">
-    <label>Id</label>
-    <p class="form-control-static">@Model.Id</p>
-</div>
-
 @using (Html.BeginForm())
 {
-    @Html.HiddenFor(x => x.Id)
+    @Html.AntiForgeryToken()
+
     <div class="form-group">
         <label>Имя</label>
         @Html.TextBoxFor(x => x.Name, new { @class = "form-control" })
     </div>
+
     <div class="form-group">
         <label>Пароль</label>
         @Html.TextBoxFor(x => x.Password, new { @class = "form-control" })
     </div>
-    <button type="submit" class="btn btn-primary" formnovalidate>Сохранить</button>
-    @Html.ActionLink("Отмена", "Index", null, new { @class = "btn btn-default" })
+
+    <div class="form-group">
+        <table class="table table-striped">
+            @if (Model.Roles?.Count() == 0)
+            {
+                <tr>
+                    <td colspan="2">Все пользователи в роли</td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <td>User ID</td>
+                    <td>Добавить в роль</td>
+                </tr>
+                foreach (AppRole role in Model.Roles)
+                {
+                    <tr>
+                        <td>@role.Name</td>
+                        <td>
+                            <input type="checkbox" name="RoleIDs" value="@role.Id">
+                        </td>
+                    </tr>
+                }
+            }
+        </table>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Создать</button>
+
+    @Html.ActionLink("Отмена", "Users", null, new { @class = "btn btn-default" })
 }

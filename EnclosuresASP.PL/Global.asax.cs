@@ -1,4 +1,4 @@
-﻿using EnclosuresASP.BLL.Infrastructure;
+﻿using EnclosuresASP.DAL.Infrastructure;
 using EnclosuresASP.PL.Jobs;
 using System;
 using System.Web;
