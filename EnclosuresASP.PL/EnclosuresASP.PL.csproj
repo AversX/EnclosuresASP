@@ -36,6 +36,11 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PublishDatabases>false</PublishDatabases>
+    <PublishDatabaseSettings>
+      <Objects>
+      </Objects>
+    </PublishDatabaseSettings>
+    <IncludeIisSettings>false</IncludeIisSettings>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -379,6 +384,8 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
+    <None Include="Properties\PublishProfiles\CustomProfile.pubxml" />
+    <None Include="Properties\PublishProfiles\CustomProfile1.pubxml" />
     <None Include="Scripts\jquery-3.2.1.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -2406,7 +2413,7 @@
       <Name>EnclosuresASP.BLL</Name>
     </ProjectReference>
     <ProjectReference Include="..\EnclosuresASP.DAL\EnclosuresASP.DAL.csproj">
-      <Project>{caef7817-7f8c-4752-a823-b91312a98e75}</Project>
+      <Project>{542a9307-12aa-4c8d-a733-351634e7e5f8}</Project>
       <Name>EnclosuresASP.DAL</Name>
     </ProjectReference>
   </ItemGroup>
