@@ -38,18 +38,20 @@ namespace EnclosuresASP.PL.Controllers
             }
         }
 
-        #region User
         [HttpGet]
         public ActionResult Users()
         {
-            return View(UserManager.Users.Where(x => x.UserName!="Root"));
+            return View(UserManager.Users);
         }
 
         [HttpGet]
         public ActionResult CreateUser()
         {
-            UserVM userVM = new UserVM();
-            PopulateRolesList(userVM);
+            UserVM userVM = new UserVM
+            {
+                Roles = RoleManager.Roles.ToList(),
+                RoleIDs = new System.Collections.Generic.List<string>()
+            };
             return View(userVM);
         }
 
@@ -80,7 +82,6 @@ namespace EnclosuresASP.PL.Controllers
                     AddErrorsFromResult(result);
                 }
             }
-            PopulateRolesList(userVM);
             return View(userVM);
         }
 
@@ -93,9 +94,10 @@ namespace EnclosuresASP.PL.Controllers
                 UserVM userVM = new UserVM()
                 {
                     Id = user.Id,
-                    Name = user.UserName
+                    Name = user.UserName,
+                    Roles = RoleManager.Roles.ToList(),
+                    RoleIDs = user.Roles.Select(x => x.RoleId).ToList()
                 };
-                PopulateRolesList(userVM);
                 return View(userVM);
             }
             else
@@ -110,7 +112,7 @@ namespace EnclosuresASP.PL.Controllers
         {
             ModelState.Remove("Password");
             AppUser user = await UserManager.FindByIdAsync(userVM.Id);
-            if (user != null && userVM.RoleIDs.Count>0)
+            if (user != null && userVM.RoleIDs?.Count>0)
             {
                 user.UserName = userVM.Name;
                 IdentityResult validName = await UserManager.UserValidator.ValidateAsync(user);
@@ -134,81 +136,39 @@ namespace EnclosuresASP.PL.Controllers
                     }
                 }
 
-                if ((validName.Succeeded && validPass == null) || (validName.Succeeded && userVM.Password != string.Empty && validPass.Succeeded))
+                if ((validName.Succeeded && validPass == null) || (validName.Succeeded && validPass.Succeeded))
                 {
                     IdentityResult result = await UserManager.UpdateAsync(user);
-                    foreach (IdentityUserRole userRole in user.Roles)
+
+                    string[] allUserRoles = UserManager.GetRoles(user.Id).ToArray();
+                    UserManager.RemoveFromRoles(user.Id, allUserRoles);
+                    IdentityResult roleResult = null;
+                    foreach (string roleId in userVM.RoleIDs)
                     {
-                        AppRole role = RoleManager.FindById(userRole.RoleId);
-                        if (role == null)
+                        AppRole role = await RoleManager.FindByIdAsync(roleId);
+
+                        roleResult = await RoleManager.RoleValidator.ValidateAsync(role);
+                        if (roleResult.Succeeded)
                         {
-                            if (!userVM.RoleIDs.Contains(role.Id))
-                            {
-
-                            }
-                            IdentityResult roleResult = await UserManager.AddToRoleAsync(user.Id, role.Name);
-                            if (!roleResult.Succeeded)
-                            {
-                                AddErrorsFromResult(result);
-                            }
+                            roleResult = await UserManager.AddToRoleAsync(user.Id, role.Name);
+                            if (!roleResult.Succeeded) AddErrorsFromResult(roleResult);
                         }
-
+                        else AddErrorsFromResult(roleResult);
                     }
-                    return RedirectToAction("Users");
-                    //foreach (IdentityUserRole userRole in user.Roles)
-                    //{
-                    //    AppRole role = RoleManager.FindById(userRole.RoleId);
 
-                    //}
-                    //for (int i = 0; i < user.Roles.Count; i++)
-                    //{
-
-                    //    if (role==null)
-                    //    {
-                    //        IdentityResult roleResult = await UserManager.AddToRoleAsync(user.Id, role.Name);
-                    //        if (!roleResult.Succeeded)
-                    //        {
-                    //            AddErrorsFromResult(result);
-                    //        }
-                    //    }
-                    //    else
-                    //    {
-                    //        IdentityResult roleResult = await UserManager.RemoveFromRoleAsync(user.Id, role.Name);
-                    //        if (!roleResult.Succeeded)
-                    //        {
-                    //            AddErrorsFromResult(result);
-                    //        }
-                    //    }
-                    //}
-
-                    //for (int i=0; i<userVM.RoleIDs.Count; i++)
-                    //{
-                    //    AppRole role = RoleManager.FindById(userVM.RoleIDs[i]);
-                    //    if (role != null)
-                    //    {
-                    //        if (!UserManager.IsInRole(userVM.Id, role.Name))
-                    //        {
-
-
-                    //        }
-                    //    }
-                    //}
-
-                    //    
-                    //if (result.Succeeded && (roleResult.Succeeded || roleResult == null))
-                    //{
-                    //    return RedirectToAction("Index");
-                    //}
-                    //else
-                    //{
-                    //    AddErrorsFromResult(result);
-                    //}
+                    if (result.Succeeded && roleResult.Succeeded)
+                    {
+                        return RedirectToAction("Users");
+                    }
+                    else
+                    {
+                        AddErrorsFromResult(result);
+                    }
                 }
             }
-            else
-            {
-                ModelState.AddModelError("", "Пользователь не найден");
-            }
+            else ModelState.AddModelError("", "Пользователю не назначена ни одна роль");
+            userVM.Roles = RoleManager.Roles.ToList();
+            userVM.RoleIDs = userVM.RoleIDs == null ? new System.Collections.Generic.List<string>() : userVM.RoleIDs;
             return View(userVM);
         }
 
@@ -241,144 +201,5 @@ namespace EnclosuresASP.PL.Controllers
                 return View("Error", new string[] { "Пользователь не найден" });
             }
         }
-
-        private void PopulateRolesList(UserVM userVM, object selectedRole = null)
-        {
-            userVM.Roles = RoleManager.Roles.ToList();
-        }
-        #endregion
-
-        #region Role
-        //[HttpGet]
-        //public ActionResult Roles()
-        //{
-        //    return View(RoleManager.Roles);
-        //}
-
-        //[HttpGet]
-        //public ActionResult CreateRole()
-        //{
-        //    return View();
-        //}
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<ActionResult> CreateRole(AppRole role)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        IdentityResult result =
-        //            await RoleManager.CreateAsync(role);
-
-        //        if (result.Succeeded)
-        //        {
-        //            return RedirectToAction("Roles");
-        //        }
-        //        else
-        //        {
-        //            AddErrorsFromResult(result);
-        //        }
-        //    }
-        //    return View(role);
-        //}
-
-        //[HttpGet]
-        //public async Task<ActionResult> EditRole(string id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //    }
-        //    AppRole role = await RoleManager.FindByIdAsync(id);
-        //    if (role == null)
-        //    {
-        //        return HttpNotFound();
-        //    }
-        //    return View(role);
-        //}
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<ActionResult> EditRole(AppRole role)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        AppRole roleToUpdate = await RoleManager.FindByIdAsync(role.Id);
-        //        if (roleToUpdate == null)
-        //        {
-        //            return HttpNotFound();
-        //        }
-        //        roleToUpdate.Name = role.Name;
-        //        IdentityResult validName = await RoleManager.RoleValidator.ValidateAsync(roleToUpdate);
-        //        if (validName.Succeeded)
-        //        {
-        //            IdentityResult result = await RoleManager.UpdateAsync(roleToUpdate);
-        //            if (result.Succeeded)
-        //            {
-        //                return RedirectToAction("Roles");
-        //            }
-        //            else
-        //            {
-        //                AddErrorsFromResult(result);
-        //            }
-        //        }
-        //        else
-        //        {
-        //            ModelState.AddModelError("", "Роль не найдена");
-        //        }
-        //    }
-        //    return View(role);
-        //}
-
-        //[HttpGet]
-        //public async Task<ActionResult> DeleteRole(string id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //    }
-        //    AppRole role = await RoleManager.FindByIdAsync(id);
-        //    if (role == null)
-        //    {
-        //        return HttpNotFound();
-        //    }
-        //    RoleVM roleVM = new RoleVM
-        //    {
-        //        Id = role.Id,
-        //        Name = role.Name,
-        //        Users = new List<AppUser>()
-        //    };
-        //    for (int i=0; i<UserManager.Users.Count(); i++)
-        //    {
-        //        if (UserManager.IsInRole(UserManager.Users.ToList()[i].Id, role.Id))
-        //            roleVM.Users.Add(UserManager.Users.ToList()[i]);
-        //    }
-        //    return View(roleVM);
-        //}
-
-        //[HttpPost, ActionName("DeleteRole")]
-        //[ValidateAntiForgeryToken]
-        //public async Task<ActionResult> DeleteRoleConfirmed(string id)
-        //{
-        //    AppUser user = await UserManager.FindByIdAsync(id);
-
-        //    if (user != null)
-        //    {
-        //        IdentityResult result = await UserManager.DeleteAsync(user);
-        //        if (result.Succeeded)
-        //        {
-        //            return RedirectToAction("Index");
-        //        }
-        //        else
-        //        {
-        //            return View("Error", result.Errors);
-        //        }
-        //    }
-        //    else
-        //    {
-        //        return View("Error", new string[] { "Роль не найдена" });
-        //    }
-        //}
-        #endregion
     }
 }

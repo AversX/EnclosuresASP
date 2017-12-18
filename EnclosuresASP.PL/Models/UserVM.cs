@@ -9,15 +9,12 @@ namespace EnclosuresASP.PL.Models
     {
         public string Id { get; set; }
 
-        [Required(ErrorMessage = "*")]
+        [Required(ErrorMessage = "Пользователю не назначен логин")]
         public string Name { get; set; }
 
-        [Required]
         public string Password { get; set; }
 
-        [Required]
         public List<string> RoleIDs { get; set; }
-
         public List<AppRole> Roles { get; set; }
     }
 }

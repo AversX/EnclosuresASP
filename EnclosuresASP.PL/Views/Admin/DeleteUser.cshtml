@@ -1,103 +1,104 @@
-﻿@model EnclosuresASP.DAL.Entities.Enclosure
+﻿@using EnclosuresASP.DAL.Identity;
+@model EnclosuresASP.PL.Models.UserVM
 
 @{
-    ViewBag.Title = "Delete";
+    ViewBag.Title = "Удалить пользователя";
 }
 
-<h2>Delete</h2>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.Id)
 
-<h3>Вы уверены, что хотите удалить запись?</h3>
-<div>
-    <h4>Шкаф</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>Номер</dt>
-        <dd>
-            @Html.DisplayFor(model => model.Number)
-           
-        </dd>
-        <br />
+    <div class="form-horizontal">
+        <h4>Удалить пользователя</h4>
+        <hr />
 
-        <dt>Принял</dt>
-        <dd>
-            @{
-                string s = Model.Supervisor.EmpPosition.PosName + ", " + Model.Supervisor.FullName;
-                @Html.Display(s)
-            }
-        </dd>
-        <br />
-
-        <dt>Блоки</dt>
-        <dd>
-            <table class="table">
-                <tr>
-                    <th>Наименование</th>
-                    <th>УИД</th>
-                </tr>
-                @foreach (var item in Model.Blocks)
-                {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.BlockName.BlockName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.UID)
-                        </td>
-                    </tr>
-                }
-
-            </table>
-        </dd>
-        <br />
-
-        <dt>СКУД</dt>
-        <dd>
-            <table class="table">
-                <tr>
-                    <th>ID</th>
-                    <th>Код</th>
-                </tr>
-                @foreach (var item in Model.ACSs)
-                {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.ACSID)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Code)
-                        </td>
-                    </tr>
-                }
-            </table>
-        </dd>
-        <br />
-
-        <dt>Прошивка</dt>
-        <dd>
-                @{
-                    if (Model.FirmwareFile != null)
-                    {
-                        <td>
-                            @Html.DisplayFor(model => model.FirmwareFilename)
-                        </td>
-                    }
-                    else
-                    {
-                        <td>
-                            @Html.Label("Файл отсутствует")
-                        </td>
-                    }
-                }
-        </dd>
-        <br />
-
-    @using (Html.BeginForm())
-    {
-        @Html.AntiForgeryToken()
-
-        <div class="form-actions no-color">
-            <input type="submit" value="Delete" class="btn btn-default" /> |
-            @Html.ActionLink("Back to List", "Index")
+        <div class="form-group">
+            <div class="col-md-5 col-md-offset-3">
+                @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+            </div>
         </div>
-    }
-</div>
+        <br />
+
+        <div class="form-group">
+            @Html.Label("Логин", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.TextBoxFor(x => x.Name, new { @class = "form-control" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Пароль", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.TextBoxFor(x => x.Password, new { @class = "form-control" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-5 col-md-offset-3">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        Роли
+                    </div>
+                    <div>
+                        <table class="table table-striped">
+                            @if (Model.Roles?.Count() == 0)
+                            {
+                                <tr>
+                                    <td colspan="2">Все пользователи в роли</td>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td>User ID</td>
+                                    <td>Добавить в роль</td>
+                                </tr>
+                                foreach (AppRole role in Model.Roles)
+                                {
+                                    <tr>
+                                        <td>@role.Name</td>
+                                        <td>
+                                            @{
+                                                if (Model.RoleIDs.Contains(role.Id))
+                                                {
+                                                    <input type="checkbox" name="RoleIDs" value="@role.Id" checked>
+                                                }
+                                                else
+                                                {
+                                                    <input type="checkbox" name="RoleIDs" value="@role.Id">
+                                                }
+                                            }
+                                        </td>
+                                    </tr>
+                                                    }
+                                                }
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="btn-group">
+                    <button id="submitBtn" name="submitBtn" class="k-primary" type="submit">Применить</button>
+                    <button id="cancelBtn" name="cancelBtn" class="k-default" type="button" data-url="@Url.Action("Users", "Admin")">Отмена</button>
+                </div>
+            </div>
+        </div>
+    </div>
+                                                }
+
+<script type="text/javascript">
+    $("#submitBtn").kendoButton();
+    $("#cancelBtn").kendoButton().click(function () {
+        var url = $(this).data('url');
+        window.location.href = url;
+    });
+</script>
+
+
+
