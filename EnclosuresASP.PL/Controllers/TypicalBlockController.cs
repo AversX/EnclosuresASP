@@ -1,4 +1,5 @@
-﻿using EnclosuresASP.BLL.Services;
+﻿using System.Data.Entity.Infrastructure;
+using EnclosuresASP.BLL.Services;
 using EnclosuresASP.DAL.Entities;
 using EnclosuresASP.PL.ActivityTrack;
 using EnclosuresASP.PL.Models;
@@ -61,9 +62,16 @@ namespace EnclosuresASP.PL.Controllers
         {
             if (ModelState.IsValid)
             {
-                typicalBlockService.Update(typicalBlock);
-                typicalBlockService.Save();
-                return RedirectToAction("Index");
+                try
+                {
+                    typicalBlockService.Update(typicalBlock);
+                    typicalBlockService.Save();
+                    return RedirectToAction("Index");
+                }
+                catch(DbUpdateConcurrencyException ex)
+                {
+                    ModelState.AddModelError("", "Объект был изменён другим пользователем. Внесённые вами изменения сохранены не будут. Откройте объект заново, чтобы отобразить актуальные данные.");
+                }
             }
             return View(typicalBlock);
         }
@@ -94,15 +102,35 @@ namespace EnclosuresASP.PL.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            BlockService blockService = new BlockService(typicalBlockService.unitOfWork);
-            List<Block> blocks = blockService.Get().Where(x => x.BlockName?.TypicalBlockID == id).ToList();
-            for (int i = 0; i < blocks.Count; i++)
+            TypicalBlock typicalBlock = typicalBlockService.GetByID(id);
+            if (typicalBlock == null)
             {
-                blocks[i].BlockName = null;
+                return HttpNotFound();
             }
-            typicalBlockService.Delete(id);
-            typicalBlockService.unitOfWork.Save();
-            return RedirectToAction("Index");
+            BlockService blockService = new BlockService(typicalBlockService.unitOfWork);
+            TypicalBlockVM typicalBlockVM = new TypicalBlockVM()
+            {
+                Blocks = blockService.Get().Where(x => x.BlockName?.TypicalBlockID == typicalBlock.TypicalBlockID).ToList(),
+                TypicalBlockID = typicalBlock.TypicalBlockID,
+                BlockName = typicalBlock.BlockName
+            };
+
+            try
+            {
+                List<Block> blocks = blockService.Get().Where(x => x.BlockName?.TypicalBlockID == id).ToList();
+                for (int i = 0; i < blocks.Count; i++)
+                {
+                    blocks[i].BlockName = null;
+                }
+                typicalBlockService.Delete(id);
+                typicalBlockService.unitOfWork.Save();
+                return RedirectToAction("Index");
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                ModelState.AddModelError("", "Объект был изменён другим пользователем. Внесённые вами изменения сохранены не будут. Откройте объект заново, чтобы отобразить актуальные данные.");
+            }
+            return View(typicalBlockVM);
         }
 
         protected override void Dispose(bool disposing)

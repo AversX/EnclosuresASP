@@ -173,23 +173,37 @@ namespace EnclosuresASP.PL.Controllers
         }
 
         [HttpGet]
-        public ActionResult DeleteUser(int id)
+        public async Task<ActionResult> DeleteUser(string id)
         {
-            return View();
+            AppUser user = await UserManager.FindByIdAsync(id);
+            if (user != null)
+            {
+                UserVM userVM = new UserVM()
+                {
+                    Id = user.Id,
+                    Name = user.UserName,
+                    Roles = user.Roles.Select(x => RoleManager.FindById(x.RoleId)).ToList()
+                };
+                return View(userVM);
+            }
+            else
+            {
+                return RedirectToAction("Users");
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteUser(string id)
+        public async Task<ActionResult> DeleteUser(UserVM userVM)
         {
-            AppUser user = await UserManager.FindByIdAsync(id);
+            AppUser user = await UserManager.FindByIdAsync(userVM.Id);
 
             if (user != null)
             {
                 IdentityResult result = await UserManager.DeleteAsync(user);
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Users");
                 }
                 else
                 {

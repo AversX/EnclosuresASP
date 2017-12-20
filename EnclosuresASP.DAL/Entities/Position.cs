@@ -1,8 +1,12 @@
-﻿namespace EnclosuresASP.DAL.Entities
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System;
+
+namespace EnclosuresASP.DAL.Entities
 {
-    public class Position//должность
+    public class Position
     {
         public int PositionID { get; set; }
-        public string PosName { get; set; } //наименование должности
+        public string PosName { get; set; }
     }
 }

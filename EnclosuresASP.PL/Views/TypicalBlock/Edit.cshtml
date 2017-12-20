@@ -12,6 +12,8 @@
         <h4>Редактирование типового блока</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(x=>x.TypicalBlockID)
+        @Html.HiddenFor(x=>x.Version)
 
         <div class="form-group">
             @Html.Label("Наименование", htmlAttributes: new { @class = "control-label col-md-4" })
@@ -24,7 +26,7 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <div class="btn-group">
-                    <button id="submitBtn" name="submitBtn" class="k-primary" type="submit">Создать</button>
+                    <button id="submitBtn" name="submitBtn" class="k-primary" type="submit">Применить</button>
                     <button id="cancelBtn" name="cancelBtn" class="k-default" type="button" data-url="@Url.Action("Index", "TypicalBlock")">Отмена</button>
                     <script type="text/javascript">
                         $("#submitBtn").kendoButton();

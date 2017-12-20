@@ -24,14 +24,7 @@
         <div class="form-group">
             @Html.Label("Логин", htmlAttributes: new { @class = "control-label col-md-4" })
             <div class="col-md-8">
-                @Html.TextBoxFor(x => x.Name, new { @class = "form-control" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.Label("Пароль", htmlAttributes: new { @class = "control-label col-md-4" })
-            <div class="col-md-8">
-                @Html.TextBoxFor(x => x.Password, new { @class = "form-control" })
+                @Html.DisplayFor(x => x.Name, new { @class = "form-control" })
             </div>
         </div>
 
@@ -46,34 +39,18 @@
                             @if (Model.Roles?.Count() == 0)
                             {
                                 <tr>
-                                    <td colspan="2">Все пользователи в роли</td>
+                                    <td colspan="1">Не назначено ни одной роли</td>
                                 </tr>
                             }
                             else
                             {
-                                <tr>
-                                    <td>User ID</td>
-                                    <td>Добавить в роль</td>
-                                </tr>
                                 foreach (AppRole role in Model.Roles)
                                 {
                                     <tr>
                                         <td>@role.Name</td>
-                                        <td>
-                                            @{
-                                                if (Model.RoleIDs.Contains(role.Id))
-                                                {
-                                                    <input type="checkbox" name="RoleIDs" value="@role.Id" checked>
-                                                }
-                                                else
-                                                {
-                                                    <input type="checkbox" name="RoleIDs" value="@role.Id">
-                                                }
-                                            }
-                                        </td>
                                     </tr>
-                                                    }
-                                                }
+                                }
+                            }
                         </table>
                     </div>
                 </div>

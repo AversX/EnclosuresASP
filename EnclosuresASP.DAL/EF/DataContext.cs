@@ -1,6 +1,7 @@
 ﻿using System.Data.Entity;
 using EnclosuresASP.DAL.Entities;
 using MySql.Data.Entity;
+using System;
 
 namespace EnclosuresASP.DAL.EF
 {
@@ -19,6 +20,20 @@ namespace EnclosuresASP.DAL.EF
             base.OnModelCreating(modelBuilder);
         }
 
+        public override int SaveChanges()
+        {
+            var concurrencyTokenEntries = ChangeTracker.Entries<IVersionedRow>();
+            foreach (var entry in concurrencyTokenEntries)
+            {
+                if (entry.State == EntityState.Unchanged)
+                {
+                    continue;
+                }
+                entry.Entity.Version = Guid.NewGuid();
+            }
+
+            return base.SaveChanges();
+        }
 
         public DbSet<Enclosure> Enclosures { get; set; }
         public DbSet<Employe> Employes { get; set; }

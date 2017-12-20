@@ -1,11 +1,17 @@
-﻿
+﻿@using EnclosuresASP.DAL.Identity;
+@model EnclosuresASP.PL.Models.UserVM
+
+@{
+    ViewBag.Title = "Создать пользователя";
+}
+
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
     @Html.HiddenFor(x => x.Id)
 
     <div class="form-horizontal">
-        <h4>Редактирование пользователя</h4>
+        <h4>Создать пользователя</h4>
         <hr />
 
         <div class="form-group">
@@ -40,13 +46,13 @@
                             @if (Model.Roles?.Count() == 0)
                             {
                                 <tr>
-                                    <td colspan="2">Все пользователи в роли</td>
+                                    <td colspan="2">Не создано ни одной роли</td>
                                 </tr>
                             }
                             else
                             {
                                 <tr>
-                                    <td>User ID</td>
+                                    <td>Наименование</td>
                                     <td>Добавить в роль</td>
                                 </tr>
                                 foreach (AppRole role in Model.Roles)
@@ -85,109 +91,6 @@
         </div>
     </div>
 }
-
-<script type="text/javascript">
-    $("#submitBtn").kendoButton();
-    $("#cancelBtn").kendoButton().click(function () {
-        var url = $(this).data('url');
-        window.location.href = url;
-    });
-</script>
-
-
-
-@using EnclosuresASP.DAL.Identity;
-@model EnclosuresASP.PL.Models.UserVM
-
-@{
-    ViewBag.Title = "Создать пользователя";
-}
-
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
-
-    <div class="form-horizontal">
-        <h4>Создать пользователя</h4>
-        <hr />
-
-        <div class="form-group">
-            <div class="col-md-5 col-md-offset-3">
-                @Html.ValidationSummary(false, "", new { @class = "text-danger" })
-            </div>
-        </div>
-        <br />
-
-        <div class="form-group">
-            @Html.Label("Логин", htmlAttributes: new { @class = "control-label col-md-4" })
-            <div class="col-md-8">
-                @Html.TextBoxFor(x => x.Name, new { @class = "form-control" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.Label("Пароль", htmlAttributes: new { @class = "control-label col-md-4" })
-            <div class="col-md-8">
-                @Html.TextBoxFor(x => x.Password, new { @class = "form-control" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-5 col-md-offset-3">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        Роли
-                    </div>
-                    <div>
-                        <table class="table table-striped">
-                            @if (Model.Roles?.Count() == 0)
-                            {
-                                <tr>
-                                    <td colspan="2">Все пользователи в роли</td>
-                                </tr>
-                            }
-                            else
-                            {
-                                <tr>
-                                    <td>User ID</td>
-                                    <td>Добавить в роль</td>
-                                </tr>
-                                foreach (AppRole role in Model.Roles)
-                                {
-                                    <tr>
-                                        <td>@role.Name</td>
-                                        <td>
-                                            @{
-                                                if (Model.RoleIDs.Contains(role.Id))
-                                                {
-                                                    <input type="checkbox" name="RoleIDs" value="@role.Id" checked>
-                                                }
-                                                else
-                                                {
-                                                    <input type="checkbox" name="RoleIDs" value="@role.Id">
-                                                }
-                                            }
-                                        </td>
-                                    </tr>
-                                }
-                            }
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <div class="btn-group">
-                    <button id="submitBtn" name="submitBtn" class="k-primary" type="submit">Создать</button>
-                    <button id="cancelBtn" name="cancelBtn" class="k-default" type="button" data-url="@Url.Action("Users", "Admin")">Отмена</button>
-                </div>
-            </div>
-        </div>
-    </div>
-                                                }
 
 <script type="text/javascript">
     $("#submitBtn").kendoButton();

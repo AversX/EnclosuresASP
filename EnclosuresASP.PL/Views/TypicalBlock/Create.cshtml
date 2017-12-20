@@ -1,7 +1,7 @@
-﻿@model EnclosuresASP.DAL.Entities.Position
+﻿@model EnclosuresASP.DAL.Entities.TypicalBlock
 
 @{
-    ViewBag.Title = "Добавление должности";
+    ViewBag.Title = "Добавление типовой блок";
 }
 
 @using (Html.BeginForm())
@@ -9,15 +9,15 @@
     @Html.AntiForgeryToken()
 
     <div class="form-horizontal">
-        <h4>Добаивть должность</h4>
+        <h4>Добаивть типовой блок</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
         <div class="form-group">
             @Html.Label("Наименование", htmlAttributes: new { @class = "control-label col-md-4" })
             <div class="col-md-8">
-                @Html.EditorFor(model => model.PosName, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.PosName, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.BlockName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.BlockName, "", new { @class = "text-danger" })
             </div>
         </div>
 
@@ -25,7 +25,7 @@
             <div class="col-md-offset-2 col-md-10">
                 <div class="btn-group">
                     <button id="submitBtn" name="submitBtn" class="k-primary" type="submit">Создать</button>
-                    <button id="cancelBtn" name="cancelBtn" class="k-default" type="button" data-url="@Url.Action("Index", "Position")">Отмена</button>
+                    <button id="cancelBtn" name="cancelBtn" class="k-default" type="button" data-url="@Url.Action("Index", "TypicalBlock")">Отмена</button>
                     <script type="text/javascript">
                         $("#submitBtn").kendoButton();
                         $("#cancelBtn").kendoButton().click(function () {
