@@ -7,85 +7,90 @@
 <div class="row">
     <h4>Удалить должность?</h4>
     <hr />
-
-    <div class="form-horizontal">
-        @Html.HiddenFor(m => m.PositionID)
-
-        <div class="form-group">
-            @Html.Label("ID", htmlAttributes: new { @class = "control-label col-md-4" })
-            <div class="col-md-8">
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="container">
+        <div class="row col-md-offset-3">
+            @Html.Label("ID", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-2">
                 @Html.DisplayFor(m => m.PositionID, new { htmlAttributes = new { @class = "form-control" } })
             </div>
         </div>
 
-        <div class="form-group">
-            @Html.Label("Наименование", htmlAttributes: new { @class = "control-label col-md-4" })
-            <div class="col-md-8">
+        <div class="row col-md-offset-3">
+            @Html.Label("Наименование", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-2">
                 @Html.DisplayFor(m => m.PosName, new { htmlAttributes = new { @class = "form-control" } })
             </div>
         </div>
     </div>
+
     @{
         if (Model.Employes?.Count() > 0)
         {
-            <p class="bg-danger">На эту должность назначены сотрудники. Удаление записи приведёт к потере информации, ссылающейся на эту запись.</p>
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    Сотрудники
-                </div>
-                <table class="table table-striped">
+            <br />
+            <div class="col-md-offset-2 col-md-10">
+                <p class="bg-danger">На эту должность назначены сотрудники. Удаление записи приведёт к потере информации, ссылающейся на эту запись.</p>
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        Сотрудники
+                    </div>
+                    <table class="table table-striped">
 
-                    <tr>
-                        <th class="text-center">ID</th>
-                        <th class="text-center">ФИО</th>
-                        <th></th>
-                    </tr>
-
-                    @if (Model.Employes?.Count() == 0)
-                    {
                         <tr>
-                            <td colspan="6" class="text-center">Нет ни одной записи</td>
+                            <th class="text-center">ID</th>
+                            <th class="text-center">ФИО</th>
+                            <th></th>
                         </tr>
-                    }
-                    else
-                    {
-                        foreach (var item in Model.Employes)
+
+                        @if (Model.Employes?.Count() == 0)
                         {
                             <tr>
-                                <td class="text-center">
-                                    @Html.DisplayFor(modelItem => item.EmployeID)
-                                </td>
-                                <td class="text-center">
-                                    @Html.DisplayFor(modelItem => item.FullName)
-                                </td>
-                                <td class="text-center">
-                                    @{
-                                        string editBtnName = "editBtn" + item.EmployeID;
-                                        string detailsBtnName = "detailsBtn" + item.EmployeID;
-                                        string deleteBtnName = "deleteBtn" + item.EmployeID;
-                                        <button id=@editBtnName name=@editBtnName class="k-primary" type="button" data-url="@Url.Action("Edit", "Employe", new { id = item.EmployeID, returnUrl = HttpContext.Current.Request.Url.AbsoluteUri  })">Редактировать</button>
-
-                                        <button id=@deleteBtnName name=@deleteBtnName class="k-primary" type="button" data-url="@Url.Action("Delete", "Employe", new { id = item.EmployeID, returnUrl = HttpContext.Current.Request.Url.AbsoluteUri  })">Удалить</button>
-
-                                        <script type="text/javascript">
-                                            $('.k-primary').kendoButton().click(function () {
-                                                var url = $(this).data('url');
-                                                window.location.href = url;
-                                            });
-                                        </script>
-                                    }
-                                </td>
+                                <td colspan="6" class="text-center">Нет ни одной записи</td>
                             </tr>
                         }
-                    }
-                </table>
+                        else
+                        {
+                            foreach (var item in Model.Employes)
+                            {
+                                <tr>
+                                    <td class="text-center">
+                                        @Html.DisplayFor(modelItem => item.EmployeID)
+                                    </td>
+                                    <td class="text-center">
+                                        @Html.DisplayFor(modelItem => item.FullName)
+                                    </td>
+                                    <td class="text-center">
+                                        @{
+                                            string editBtnName = "editBtn" + item.EmployeID;
+                                            string detailsBtnName = "detailsBtn" + item.EmployeID;
+                                            string deleteBtnName = "deleteBtn" + item.EmployeID;
+                                            <button id=@editBtnName name=@editBtnName class="k-primary" type="button" data-url="@Url.Action("Edit", "Employe", new { id = item.EmployeID, returnUrl = HttpContext.Current.Request.Url.AbsoluteUri  })">Редактировать</button>
+
+                                            <button id=@deleteBtnName name=@deleteBtnName class="k-primary" type="button" data-url="@Url.Action("Delete", "Employe", new { id = item.EmployeID, returnUrl = HttpContext.Current.Request.Url.AbsoluteUri  })">Удалить</button>
+
+                                            <script type="text/javascript">
+                                                $('.k-primary').kendoButton().click(function () {
+                                                    var url = $(this).data('url');
+                                                    window.location.href = url;
+                                                });
+                                            </script>
+                                        }
+                                    </td>
+                                </tr>
+                                                }
+                                            }
+                    </table>
+                </div>
             </div>
-        }
+                                            }
     }
-    
+
     @using (Html.BeginForm())
-    {
+            {
         @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.PositionID)
+        @Html.HiddenFor(x => x.Version)
+        @Html.HiddenFor(x => x.PosName)
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">

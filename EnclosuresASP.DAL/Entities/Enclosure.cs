@@ -2,10 +2,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System;
+using EnclosuresASP.DAL.EF;
 
 namespace EnclosuresASP.DAL.Entities
 {
-    public class Enclosure
+    public class Enclosure : IVersionedRow
     {
         public bool Temporary { get; set; } 
 
@@ -23,5 +24,10 @@ namespace EnclosuresASP.DAL.Entities
 
         public virtual ICollection<EnclosureFile> Files { get; set; }
         public virtual ICollection<Block> Blocks { get; set; }
+
+        [Required]
+        [ConcurrencyCheck]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public Guid Version { get; set; }
     }
 }

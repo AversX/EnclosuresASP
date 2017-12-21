@@ -37,9 +37,9 @@ namespace EnclosuresASP.BLL.Services
             unitOfWork.TypicalBlockRepository.Insert(entity);
         }
 
-        public virtual void Delete(object id)
+        public virtual void Delete(object id, Guid newVersionGuid)
         {
-            unitOfWork.TypicalBlockRepository.Delete(id);
+            unitOfWork.TypicalBlockRepository.Delete(id, newVersionGuid);
         }
 
         public virtual void Delete(TypicalBlock entityToDelete)

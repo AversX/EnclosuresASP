@@ -53,10 +53,14 @@ namespace EnclosuresASP.DAL.EF
             dbSet.Add(entity);
         }
 
-        public virtual void Delete(object id)
+        public virtual void Delete(object id, Guid newVersionGuid)
         {
             TEntity entityToDelete = dbSet.Find(id);
-            Delete(entityToDelete);
+            Guid s1 = context.Entry<TEntity>(entityToDelete).OriginalValues.GetValue<Guid>("Version");
+            if (s1 == newVersionGuid)
+                Delete(entityToDelete);
+            else
+                throw new System.Data.Entity.Infrastructure.DbUpdateConcurrencyException();
         }
 
         public virtual void Delete(TEntity entityToDelete)
@@ -66,6 +70,7 @@ namespace EnclosuresASP.DAL.EF
                 dbSet.Attach(entityToDelete);
             }
             context.Entry<TEntity>(entityToDelete).State = EntityState.Deleted;
+            dbSet.Remove(entityToDelete);
         }
 
         public virtual void Update(TEntity entityToUpdate)

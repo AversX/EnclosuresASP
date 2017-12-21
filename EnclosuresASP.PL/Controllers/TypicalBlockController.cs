@@ -93,43 +93,40 @@ namespace EnclosuresASP.PL.Controllers
             {
                 Blocks = blockService.Get().Where(x => x.BlockName?.TypicalBlockID == typicalBlock.TypicalBlockID).ToList(),
                 TypicalBlockID = typicalBlock.TypicalBlockID,
-                BlockName = typicalBlock.BlockName
+                BlockName = typicalBlock.BlockName,
+                Version = typicalBlock.Version
             };
             return View(typicalBlockVM);
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult DeleteConfirmed(TypicalBlockVM typicalBlockVM)
         {
-            TypicalBlock typicalBlock = typicalBlockService.GetByID(id);
-            if (typicalBlock == null)
-            {
-                return HttpNotFound();
-            }
             BlockService blockService = new BlockService(typicalBlockService.unitOfWork);
-            TypicalBlockVM typicalBlockVM = new TypicalBlockVM()
+            TypicalBlock typicalBlock = new TypicalBlock()
             {
-                Blocks = blockService.Get().Where(x => x.BlockName?.TypicalBlockID == typicalBlock.TypicalBlockID).ToList(),
-                TypicalBlockID = typicalBlock.TypicalBlockID,
-                BlockName = typicalBlock.BlockName
+                Version = typicalBlockVM.Version,
+                TypicalBlockID = typicalBlockVM.TypicalBlockID,
+                BlockName = typicalBlockVM.BlockName
             };
 
             try
             {
-                List<Block> blocks = blockService.Get().Where(x => x.BlockName?.TypicalBlockID == id).ToList();
+                List<Block> blocks = blockService.Get().Where(x => x.BlockName?.TypicalBlockID == typicalBlock.TypicalBlockID).ToList();
                 for (int i = 0; i < blocks.Count; i++)
                 {
                     blocks[i].BlockName = null;
                 }
-                typicalBlockService.Delete(id);
-                typicalBlockService.unitOfWork.Save();
+                typicalBlockService.Delete(typicalBlock.TypicalBlockID, typicalBlock.Version);
+                typicalBlockService.Save();
                 return RedirectToAction("Index");
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                ModelState.AddModelError("", "Объект был изменён другим пользователем. Внесённые вами изменения сохранены не будут. Откройте объект заново, чтобы отобразить актуальные данные.");
+                ModelState.AddModelError("", "Объект был изменён другим пользователем. Удаление невозможно. Откройте объект заново, чтобы отобразить актуальные данные.");
             }
+            typicalBlockVM.Blocks = blockService.Get().Where(x => x.BlockName?.TypicalBlockID == typicalBlock.TypicalBlockID).ToList();
             return View(typicalBlockVM);
         }
 

@@ -36,9 +36,9 @@ namespace EnclosuresASP.BLL.Services
             unitOfWork.EmployeRepository.Insert(entity);
         }
 
-        public virtual void Delete(object id)
+        public virtual void Delete(object id, Guid newVersionGuid)
         {
-            unitOfWork.EmployeRepository.Delete(id);
+            unitOfWork.EmployeRepository.Delete(id, newVersionGuid);
         }
 
         public virtual void Delete(Employe entityToDelete)

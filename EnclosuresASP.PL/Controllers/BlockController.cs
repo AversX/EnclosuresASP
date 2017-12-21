@@ -44,7 +44,7 @@ namespace EnclosuresASP.PL.Controllers
                 };
 
                 blockService.Insert(block);
-                blockService.unitOfWork.Save();
+                blockService.Save();
                 return RedirectToAction("Index");
             }
             PopulateBlockList(blockVM);
@@ -95,7 +95,7 @@ namespace EnclosuresASP.PL.Controllers
                 blockToUpdate.BlockName = blockVM.TypicalBlockID == null ? null : typicalBlockService.GetByID(blockVM.TypicalBlockID);
 
                 blockService.Update(blockToUpdate);
-                blockService.unitOfWork.Save();
+                blockService.Save();
                 return Redirect(returnUrl);
             }
             PopulateBlockList(blockVM, blockVM.TypicalBlockID);
@@ -128,8 +128,8 @@ namespace EnclosuresASP.PL.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id, string returnUrl)
         {
-            blockService.Delete(id);
-            blockService.unitOfWork.Save();
+           // blockService.Delete(id);
+            blockService.Save();
             return Redirect(returnUrl);
         }
 

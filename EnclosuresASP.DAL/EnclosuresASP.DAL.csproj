@@ -110,41 +110,9 @@
     <Compile Include="Migrations\201712201012085_initial.Designer.cs">
       <DependentUpon>201712201012085_initial.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201712201019058_guidConcurrency.cs" />
-    <Compile Include="Migrations\201712201019058_guidConcurrency.Designer.cs">
-      <DependentUpon>201712201019058_guidConcurrency.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201712201054454_guidConcurrency1.cs" />
-    <Compile Include="Migrations\201712201054454_guidConcurrency1.Designer.cs">
-      <DependentUpon>201712201054454_guidConcurrency1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201712201103458_guidConcurrency2.cs" />
-    <Compile Include="Migrations\201712201103458_guidConcurrency2.Designer.cs">
-      <DependentUpon>201712201103458_guidConcurrency2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201712201107098_guidConcurrency3.cs" />
-    <Compile Include="Migrations\201712201107098_guidConcurrency3.Designer.cs">
-      <DependentUpon>201712201107098_guidConcurrency3.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201712201123287_guidConcurrency4.cs" />
-    <Compile Include="Migrations\201712201123287_guidConcurrency4.Designer.cs">
-      <DependentUpon>201712201123287_guidConcurrency4.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201712201127021_guidConcurrency5.cs" />
-    <Compile Include="Migrations\201712201127021_guidConcurrency5.Designer.cs">
-      <DependentUpon>201712201127021_guidConcurrency5.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201712201129072_guidConcurrency6.cs" />
-    <Compile Include="Migrations\201712201129072_guidConcurrency6.Designer.cs">
-      <DependentUpon>201712201129072_guidConcurrency6.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201712201129302_guidConcurrency7.cs" />
-    <Compile Include="Migrations\201712201129302_guidConcurrency7.Designer.cs">
-      <DependentUpon>201712201129302_guidConcurrency7.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201712201146459_guidConcurrency8.cs" />
-    <Compile Include="Migrations\201712201146459_guidConcurrency8.Designer.cs">
-      <DependentUpon>201712201146459_guidConcurrency8.cs</DependentUpon>
+    <Compile Include="Migrations\201712210437267_guidConcurrency.cs" />
+    <Compile Include="Migrations\201712210437267_guidConcurrency.Designer.cs">
+      <DependentUpon>201712210437267_guidConcurrency.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -159,32 +127,8 @@
     <EmbeddedResource Include="Migrations\201712201012085_initial.resx">
       <DependentUpon>201712201012085_initial.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201712201019058_guidConcurrency.resx">
-      <DependentUpon>201712201019058_guidConcurrency.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201712201054454_guidConcurrency1.resx">
-      <DependentUpon>201712201054454_guidConcurrency1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201712201103458_guidConcurrency2.resx">
-      <DependentUpon>201712201103458_guidConcurrency2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201712201107098_guidConcurrency3.resx">
-      <DependentUpon>201712201107098_guidConcurrency3.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201712201123287_guidConcurrency4.resx">
-      <DependentUpon>201712201123287_guidConcurrency4.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201712201127021_guidConcurrency5.resx">
-      <DependentUpon>201712201127021_guidConcurrency5.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201712201129072_guidConcurrency6.resx">
-      <DependentUpon>201712201129072_guidConcurrency6.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201712201129302_guidConcurrency7.resx">
-      <DependentUpon>201712201129302_guidConcurrency7.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201712201146459_guidConcurrency8.resx">
-      <DependentUpon>201712201146459_guidConcurrency8.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201712210437267_guidConcurrency.resx">
+      <DependentUpon>201712210437267_guidConcurrency.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

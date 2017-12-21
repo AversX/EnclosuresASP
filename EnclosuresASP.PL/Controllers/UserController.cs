@@ -14,6 +14,7 @@ namespace EnclosuresASP.PL.Controllers
     public class UserController : Controller
     {
         [AllowAnonymous]
+        [HttpGet]
         public ActionResult Login(string returnUrl)
         {
             ViewBag.returnUrl = returnUrl;
@@ -29,7 +30,7 @@ namespace EnclosuresASP.PL.Controllers
 
             if (user == null)
             {
-                ModelState.AddModelError("", "Некорректное имя или пароль...");
+                ModelState.AddModelError("", "Некорректные логин и/или пароль...");
             }
             else
             {

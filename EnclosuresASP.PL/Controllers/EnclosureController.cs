@@ -118,7 +118,7 @@ namespace EnclosuresASP.PL.Controllers
 
                 enclosure.Temporary = false;
                 enclosureService.Insert(enclosure);
-                enclosureService.unitOfWork.Save();
+                enclosureService.Save();
                 return RedirectToAction("Index");
             }
             if (enclosureVM.EmployeID != null)
@@ -213,7 +213,7 @@ namespace EnclosuresASP.PL.Controllers
                 }
 
                 enclosureService.Update(enclosureToUpdate);
-                enclosureService.unitOfWork.Save();
+                enclosureService.Save();
                 return Redirect(returnUrl);
             }
             if (enclosureVM.EmployeID != null)
@@ -244,8 +244,8 @@ namespace EnclosuresASP.PL.Controllers
         public ActionResult DeleteConfirmed(int id, string returnUrl)
         {
             Enclosure enclosureToDelete = enclosureService.GetByID(id);
-            enclosureService.Delete(id);
-            enclosureService.unitOfWork.Save();
+            //enclosureService.Delete(id);
+            enclosureService.Save();
             return Redirect(returnUrl);
         }
 

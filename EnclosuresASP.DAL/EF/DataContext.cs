@@ -31,7 +31,6 @@ namespace EnclosuresASP.DAL.EF
                 }
                 entry.Entity.Version = Guid.NewGuid();
             }
-
             return base.SaveChanges();
         }
 

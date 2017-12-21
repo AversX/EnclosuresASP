@@ -13,6 +13,8 @@
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(x=> x.PositionID)
+        @Html.HiddenFor(x => x.Version)
+
         <div class="form-group">
             @Html.Label("Наименование", htmlAttributes: new { @class = "control-label col-md-4" })
             <div class="col-md-8">

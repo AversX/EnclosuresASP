@@ -42,7 +42,7 @@ namespace EnclosuresASP.PL.Controllers
                     EmpPosition = employeVM.PositionID == null ? null : positionService.GetByID(employeVM.PositionID)
                 };
                 employeService.Insert(employe);
-                employeService.unitOfWork.Save();
+                employeService.Save();
                 return RedirectToAction("Index");
             }
             PopulatePositionList(employeVM);
@@ -94,7 +94,7 @@ namespace EnclosuresASP.PL.Controllers
                 employeToUpdate.EmpPosition = employeVM.PositionID == null ? null : positionService.GetByID(employeVM.PositionID);
 
                 employeService.Update(employeToUpdate);
-                employeService.unitOfWork.Save();
+                employeService.Save();
                 return Redirect(returnUrl);
             }
             PopulatePositionList(employeVM, employeVM.PositionID);
@@ -135,8 +135,8 @@ namespace EnclosuresASP.PL.Controllers
             {
                 enclosures[i].Supervisor = null;
             }
-            employeService.Delete(id);
-            employeService.unitOfWork.Save();
+           // employeService.Delete(id);
+            employeService.Save();
             return Redirect(returnUrl);
         }
 

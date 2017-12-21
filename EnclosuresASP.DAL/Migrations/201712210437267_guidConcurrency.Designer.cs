@@ -7,13 +7,13 @@ namespace EnclosuresASP.DAL.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
-    public sealed partial class guidConcurrency6 : IMigrationMetadata
+    public sealed partial class guidConcurrency : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(guidConcurrency6));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(guidConcurrency));
         
         string IMigrationMetadata.Id
         {
-            get { return "201712201129072_guidConcurrency6"; }
+            get { return "201712210437267_guidConcurrency"; }
         }
         
         string IMigrationMetadata.Source

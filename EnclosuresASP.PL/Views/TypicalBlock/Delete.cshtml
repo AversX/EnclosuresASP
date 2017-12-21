@@ -7,20 +7,18 @@
 <div class="row">
     <h4>Удалить типовой блок?</h4>
     <hr />
-
-    <div class="form-horizontal">
-        @Html.HiddenFor(m => m.TypicalBlockID)
-
-        <div class="form-group">
-            @Html.Label("ID", htmlAttributes: new { @class = "control-label col-md-4" })
-            <div class="col-md-8">
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="container">
+        <div class="row col-md-offset-3">
+            @Html.Label("ID", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-2">
                 @Html.DisplayFor(m => m.TypicalBlockID, new { htmlAttributes = new { @class = "form-control" } })
             </div>
         </div>
 
-        <div class="form-group">
-            @Html.Label("Наименование", htmlAttributes: new { @class = "control-label col-md-4" })
-            <div class="col-md-8">
+        <div class="row col-md-offset-3">
+            @Html.Label("Наименование", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-2">
                 @Html.DisplayFor(m => m.BlockName, new { htmlAttributes = new { @class = "form-control" } })
             </div>
         </div>
@@ -29,57 +27,60 @@
     @{
         if (Model.Blocks?.Count() > 0)
         {
-            <p class="bg-danger">Тип присвоен блокам. Удаление записи приведёт к потере информации, ссылающейся на эту запись.</p>
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    Блоки
-                </div>
-                <table class="table table-striped">
+            <br />
+            <div class="col-md-offset-2 col-md-10">
+                <p class="bg-danger">Тип присвоен блокам. Удаление записи приведёт к потере информации, ссылающейся на эту запись.</p>
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        Блоки
+                    </div>
+                    <table class="table table-striped">
 
-                    <tr>
-                        <th class="text-center">ID</th>
-                        <th class="text-center">UID</th>
-                        <th></th>
-                    </tr>
-
-                    @if (Model.Blocks.Count() == 0)
-                    {
                         <tr>
-                            <td colspan="6" class="text-center">Нет ни одной записи</td>
+                            <th class="text-center">ID</th>
+                            <th class="text-center">UID</th>
+                            <th></th>
                         </tr>
-                    }
-                    else
-                    {
-                        foreach (var item in Model.Blocks)
+
+                        @if (Model.Blocks.Count() == 0)
                         {
                             <tr>
-                                <td class="text-center">
-                                    @Html.DisplayFor(modelItem => item.BlockID)
-                                </td>
-                                <td class="text-center">
-                                    @Html.DisplayFor(modelItem => item.UID)
-                                </td>
-                                <td class="text-center">
-                                    @{
-                                        string editBtnName = "editBtn" + item.BlockID;
-                                        string detailsBtnName = "detailsBtn" + item.BlockID;
-                                        string deleteBtnName = "deleteBtn" + item.BlockID;
-                                        <button id=@editBtnName name=@editBtnName class="k-primary" type="button" data-url="@Url.Action("Edit", "Block", new { id = item.BlockID, returnUrl = HttpContext.Current.Request.Url.AbsoluteUri })">Редактировать</button>
-
-                                        <button id=@deleteBtnName name=@deleteBtnName class="k-primary" type="button" data-url="@Url.Action("Delete", "Block", new { id = item.BlockID, returnUrl = HttpContext.Current.Request.Url.AbsoluteUri })">Удалить</button>
-
-                                        <script type="text/javascript">
-                                            $('.k-primary').kendoButton().click(function () {
-                                                var url = $(this).data('url');
-                                                window.location.href = url;
-                                            });
-                                        </script>
-                                    }
-                                </td>
+                                <td colspan="6" class="text-center">Нет ни одной записи</td>
                             </tr>
                         }
-                    }
-                </table>
+                        else
+                        {
+                            foreach (var item in Model.Blocks)
+                            {
+                                <tr>
+                                    <td class="text-center">
+                                        @Html.DisplayFor(modelItem => item.BlockID)
+                                    </td>
+                                    <td class="text-center">
+                                        @Html.DisplayFor(modelItem => item.UID)
+                                    </td>
+                                    <td class="text-center">
+                                        @{
+                                            string editBtnName = "editBtn" + item.BlockID;
+                                            string detailsBtnName = "detailsBtn" + item.BlockID;
+                                            string deleteBtnName = "deleteBtn" + item.BlockID;
+                                            <button id=@editBtnName name=@editBtnName class="k-primary" type="button" data-url="@Url.Action("Edit", "Block", new { id = item.BlockID, returnUrl = HttpContext.Current.Request.Url.AbsoluteUri })">Редактировать</button>
+
+                                            <button id=@deleteBtnName name=@deleteBtnName class="k-primary" type="button" data-url="@Url.Action("Delete", "Block", new { id = item.BlockID, returnUrl = HttpContext.Current.Request.Url.AbsoluteUri })">Удалить</button>
+
+                                            <script type="text/javascript">
+                                                $('.k-primary').kendoButton().click(function () {
+                                                    var url = $(this).data('url');
+                                                    window.location.href = url;
+                                                });
+                                            </script>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </table>
+                </div>
             </div>
         }
     }
@@ -87,9 +88,12 @@
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.TypicalBlockID)
+        @Html.HiddenFor(x => x.Version)
+        @Html.HiddenFor(x => x.BlockName)
 
         <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
+            <div class="col-md-offset-3 col-md-10">
                 <div class="btn-group">
                     <button id="deleteBtn" name="deleteBtn" class="k-primary" type="submit">Удалить</button>
                     <button id="cancelBtn" name="cancelBtn" class="k-default" type="button" data-url="@Url.Action("Index", "TypicalBlock")">Отмена</button>

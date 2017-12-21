@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using System.Data.Entity.Infrastructure;
 
 namespace EnclosuresASP.PL.Controllers
 {
@@ -61,9 +62,16 @@ namespace EnclosuresASP.PL.Controllers
         {
             if (ModelState.IsValid)
             {
-                positionService.Update(position);
-                positionService.unitOfWork.Save();
-                return RedirectToAction("Index");
+                try
+                {
+                    positionService.Update(position);
+                    positionService.Save();
+                    return RedirectToAction("Index");
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    ModelState.AddModelError("", "Объект был изменён другим пользователем. Внесённые вами изменения сохранены не будут. Откройте объект заново, чтобы отобразить актуальные данные.");
+                }
             }
             return View(position);
         }
@@ -85,24 +93,42 @@ namespace EnclosuresASP.PL.Controllers
             {
                 Employes = employeService.Get().Where(x => x.EmpPosition?.PositionID == position.PositionID).ToList(),
                 PositionID = position.PositionID,
-                PosName = position.PosName
+                PosName = position.PosName,
+                Version = position.Version
             };
             return View(positionVM);
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult DeleteConfirmed(PositionVM positionVM)
         {
             EmployeService employeService = new EmployeService(positionService.unitOfWork);
-            List<Employe> employes = employeService.Get().Where(x => x.EmpPosition?.PositionID == id).ToList();
-            for (int i = 0; i < employes.Count; i++)
+            Position position = new Position()
             {
-                employes[i].EmpPosition = null;
+                PositionID = positionVM.PositionID,
+                PosName = positionVM.PosName,
+                Version = positionVM.Version
+            };
+
+            try
+            {
+                List<Employe> employes = employeService.Get().Where(x => x.EmpPosition?.PositionID == position.PositionID).ToList();
+                for (int i = 0; i < employes.Count; i++)
+                {
+                    employes[i].EmpPosition = null;
+                }
+
+                positionService.Delete(position.PositionID, position.Version);
+                positionService.Save();
+                return RedirectToAction("Index");
             }
-            positionService.Delete(id);
-            positionService.unitOfWork.Save();
-            return RedirectToAction("Index");
+            catch (DbUpdateConcurrencyException ex)
+            {
+                ModelState.AddModelError("", "Объект был изменён другим пользователем. Удаление невозможно. Откройте объект заново, чтобы отобразить актуальные данные.");
+            }
+            positionVM.Employes = employeService.Get().Where(x => x.EmpPosition?.PositionID == position.PositionID).ToList();
+            return View(positionVM);
         }
 
         protected override void Dispose(bool disposing)

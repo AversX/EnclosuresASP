@@ -1,10 +1,11 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using EnclosuresASP.DAL.EF;
 
 namespace EnclosuresASP.DAL.Entities
 {
-    public class Block
+    public class Block : IVersionedRow
     {
         public int BlockID { get; set; }
         public string UID { get; set; } //уид предполагается полностью уникальным
@@ -15,6 +16,11 @@ namespace EnclosuresASP.DAL.Entities
         public virtual TypicalBlock BlockName { get; set; }
 
         public Guid BlockGuid { get; set; }
+
+        [Required]
+        [ConcurrencyCheck]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public Guid Version { get; set; }
 
         public Block()
         {
