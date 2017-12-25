@@ -12,13 +12,21 @@ namespace EnclosuresASP.DAL.Entities
 
         public int EnclosureID { get; set; }
 
-        [Required]
         public string Number { get; set; }
+
+        public string ElisNumber { get; set; }
+
+        public string AcceptanceDate { get; set; }
 
         public virtual Employe Supervisor { get; set; }
 
-        public string RootLogin { get; set; }
-        public string RootPassword { get; set; }
+        public string Lvl1Password { get; set; }
+        public string Lvl2Password { get; set; }
+        public string Lvl3Password { get; set; }
+        public string Lvl4Password { get; set; }
+        public string Lvl5Password { get; set; }
+
+        public string Object { get; set; }
 
         public string Username { get; set; }
 

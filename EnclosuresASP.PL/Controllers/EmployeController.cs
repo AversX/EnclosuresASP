@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using System.Data.Entity.Infrastructure;
 
 namespace EnclosuresASP.PL.Controllers
 {
@@ -88,14 +89,21 @@ namespace EnclosuresASP.PL.Controllers
             if (ModelState.IsValid)
             {
                 PositionService positionService = new PositionService(employeService.unitOfWork);
-                Employe employeToUpdate = employeService.GetByID(employeVM.EmployeID);
 
+                Employe employeToUpdate = employeService.GetByID(employeVM.EmployeID);
                 employeToUpdate.FullName = employeVM.FullName;
                 employeToUpdate.EmpPosition = employeVM.PositionID == null ? null : positionService.GetByID(employeVM.PositionID);
-
-                employeService.Update(employeToUpdate);
-                employeService.Save();
-                return Redirect(returnUrl);
+                
+                try
+                {
+                    employeService.Update(employeToUpdate);
+                    employeService.Save();
+                    return Redirect(returnUrl);
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    ModelState.AddModelError("", "Объект был изменён другим пользователем. Внесённые вами изменения сохранены не будут. Откройте объект заново, чтобы отобразить актуальные данные.");
+                }
             }
             PopulatePositionList(employeVM, employeVM.PositionID);
             return View(employeVM);
@@ -119,7 +127,9 @@ namespace EnclosuresASP.PL.Controllers
                 Enclosures = enclosureService.Get().Where(x => x.Supervisor?.EmployeID == id).ToList(),
                 EmployeID = employe.EmployeID,
                 EmpPosition = employe.EmpPosition ?? null,
-                FullName = employe.FullName
+                PositionID = employe.EmpPosition.PositionID,
+                FullName = employe.FullName,
+                Version = employe.Version
             };
             ViewBag.returnUrl = returnUrl;
             return View(employeVM);
@@ -127,17 +137,33 @@ namespace EnclosuresASP.PL.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id, string returnUrl)
+        public ActionResult DeleteConfirmed(EmployeVM employeVM, string returnUrl)
         {
             EnclosureService enclosureService = new EnclosureService(employeService.unitOfWork);
-            List<Enclosure> enclosures = enclosureService.Get().Where(x => x.Supervisor?.EmployeID == id).ToList();
-            for (int i=0; i<enclosures.Count; i++)
+            try
             {
-                enclosures[i].Supervisor = null;
+                List<Enclosure> enclosures = enclosureService.Get().Where(x => x.Supervisor?.EmployeID == employeVM.EmployeID).ToList();
+                for (int i = 0; i < enclosures.Count; i++)
+                {
+                    enclosures[i].Supervisor = null;
+                }
+                employeService.Delete(employeVM.EmployeID, employeVM.Version);
+                employeService.Save();
+                return Redirect(returnUrl);
             }
-           // employeService.Delete(id);
-            employeService.Save();
-            return Redirect(returnUrl);
+            catch (DbUpdateConcurrencyException ex)
+            {
+                ModelState.AddModelError("", "Объект был изменён другим пользователем. Удаление невозможно. Откройте объект заново, чтобы отобразить актуальные данные.");
+            }
+            PositionService positionService = new PositionService(employeService.unitOfWork);
+            employeVM = new EmployeVM
+            {
+                FullName = employeVM.FullName,
+                Enclosures = enclosureService.Get().Where(x => x.Supervisor?.EmployeID == employeVM.EmployeID).ToList(),
+                EmpPosition = positionService.GetByID(employeVM.PositionID),
+                Version = employeVM.Version
+            };
+            return View(employeVM);
         }
 
         protected override void Dispose(bool disposing)

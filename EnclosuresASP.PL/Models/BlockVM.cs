@@ -13,6 +13,10 @@ namespace EnclosuresASP.PL.Models
         [Required(ErrorMessage = "Обязательное поле")]
         public string UID { get; set; }
 
+        public string Number { get; set; }
+
+        public string SoftwareVersion { get; set; }
+
         public int? TypicalBlockID { get; set; }
         public IEnumerable<SelectListItem> TypicalBlocks { get; set; }
         public TypicalBlock BlockName { get; set; }

@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using EnclosuresASP.DAL.Entities;
+using System;
 
 namespace EnclosuresASP.PL.Models
 {
@@ -17,5 +18,8 @@ namespace EnclosuresASP.PL.Models
         public IEnumerable<SelectListItem> Positions { get; set; }
 
         public List<Enclosure> Enclosures { get; set; }
+
+        [Required]
+        public Guid Version { get; set; }
     }
 }

@@ -45,9 +45,11 @@
     <table class="table table-striped">
 
         <tr>
-            <th class="text-center">Номер</th>
+            <th class="text-center">Номер ШЭ</th>
+            <th class="text-center">Номер ЭЛИС</th>
             <th class="text-center">Принял</th>
-            <th class="text-center">Root-аккаунт</th>
+            <th class="text-center">Дата приёмки</th>
+            <th class="text-center">Объект</th>
             <th class="text-center">Блоки</th>
             <th class="text-center">Файлы</th>
             <th></th>
@@ -68,39 +70,19 @@
                         @Html.DisplayFor(modelItem => item.Number)
                     </td>
                     <td class="text-center">
+                        @Html.DisplayFor(modelItem => item.ElisNumber)
+                    </td>
+                    <td class="text-center">
                         @Html.DisplayFor(modelItem => item.Supervisor.EmpPosition.PosName)
                         <br />
                         @Html.DisplayFor(modelItem => item.Supervisor.FullName)
                     </td>
-                    @{
-                        if (item.RootLogin != null || item.RootPassword != null)
-                        {
-                            if ((item.RootLogin != null && item.RootLogin.Length > 0) || (item.RootPassword != null && item.RootPassword.Length > 0))
-                            {
-                                <td>
-                                    <div class="span-center">
-                                        <span class="icon icon-checked"></span>
-                                    </div>
-                                </td>
-                            }
-                            else
-                            {
-                                <td>
-                                    <div class="span-center">
-                                        <span class="icon icon-unchecked"></span>
-                                    </div>
-                                </td>
-                            }
-                        }
-                        else
-                        {
-                            <td>
-                                <div class="span-center">
-                                    <span class="icon icon-unchecked"></span>
-                                </div>
-                            </td>
-                        }
-                    }
+                    <td class="text-center">
+                        @Html.DisplayFor(modelItem => item.AcceptanceDate)
+                    </td>
+                    <td class="text-center">
+                        @Html.DisplayFor(modelItem => item.Object)
+                    </td>
                     <td class="text-center">
                         @Html.DisplayFor(modelItem => item.Blocks.Count)
                     </td>

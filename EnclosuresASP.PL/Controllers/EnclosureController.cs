@@ -10,6 +10,8 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using System.Data.Entity.Infrastructure;
+using System;
 
 namespace EnclosuresASP.PL.Controllers
 {
@@ -50,7 +52,8 @@ namespace EnclosuresASP.PL.Controllers
             {
                 EnclosureID = enclosure.EnclosureID,
                 Username = enclosure.Username,
-                BlocksJSON = JsonConvert.SerializeObject(enclosure.Blocks)
+                BlocksJSON = JsonConvert.SerializeObject(enclosure.Blocks),
+                AcceptanceDate = DateTime.Now
             };
             PopulateEmployeList(enclosureVM);
             return View(enclosureVM);
@@ -70,8 +73,14 @@ namespace EnclosuresASP.PL.Controllers
                 Enclosure enclosure;
                 enclosure = enclosureService.GetByID(enclosureVM.EnclosureID);
                 enclosure.Number = enclosureVM.Number;
-                enclosure.RootLogin = enclosureVM.RootLogin;
-                enclosure.RootPassword = enclosureVM.RootPassword;
+                enclosure.ElisNumber = enclosureVM.ElisNumber;
+                enclosure.AcceptanceDate = enclosureVM.AcceptanceDate?.ToShortDateString();
+                enclosure.Lvl1Password = enclosureVM.Lvl1Password;
+                enclosure.Lvl2Password = enclosureVM.Lvl2Password;
+                enclosure.Lvl3Password = enclosureVM.Lvl3Password;
+                enclosure.Lvl4Password = enclosureVM.Lvl4Password;
+                enclosure.Lvl5Password = enclosureVM.Lvl5Password;
+                enclosure.Object = enclosureVM.Object;
                 enclosure.Supervisor = enclosureVM.EmployeID == null ? null : employeService.GetByID(enclosureVM.EmployeID);
 
 
@@ -144,10 +153,17 @@ namespace EnclosuresASP.PL.Controllers
             {
                 EnclosureID = enclosure.EnclosureID,
                 Number = enclosure.Number,
-                RootLogin = enclosure.RootLogin,
-                RootPassword = enclosure.RootPassword,
+                ElisNumber = enclosure.ElisNumber,
+                AcceptanceDate = DateTime.Parse(enclosure.AcceptanceDate),
+                Lvl1Password = enclosure.Lvl1Password,
+                Lvl2Password = enclosure.Lvl2Password,
+                Lvl3Password = enclosure.Lvl3Password,
+                Lvl4Password = enclosure.Lvl4Password,
+                Lvl5Password = enclosure.Lvl5Password,
+                Object = enclosure.Object,
                 BlocksJSON = JsonConvert.SerializeObject(enclosure.Blocks),
                 FilesJSON = JsonConvert.SerializeObject(enclosure.Files.Select(x => new { name = x.Filename, extension = Path.GetExtension(x.Filename), size = x.Bytes.Length }).ToList()),
+                Version = enclosure.Version
             };
             if (enclosure.Supervisor == null)
             {
@@ -174,10 +190,18 @@ namespace EnclosuresASP.PL.Controllers
                 TypicalBlockService typicalBlockService = new TypicalBlockService(enclosureService.unitOfWork);
 
                 Enclosure enclosureToUpdate = enclosureService.GetByID(enclosureVM.EnclosureID);
+                enclosureToUpdate = enclosureService.GetByID(enclosureVM.EnclosureID);
                 enclosureToUpdate.Number = enclosureVM.Number;
-                enclosureToUpdate.RootLogin = enclosureVM.RootLogin;
-                enclosureToUpdate.RootPassword = enclosureVM.RootPassword;
+                enclosureToUpdate.ElisNumber = enclosureVM.ElisNumber;
+                enclosureToUpdate.AcceptanceDate = enclosureVM.AcceptanceDate?.ToShortDateString();
+                enclosureToUpdate.Lvl1Password = enclosureVM.Lvl1Password;
+                enclosureToUpdate.Lvl2Password = enclosureVM.Lvl2Password;
+                enclosureToUpdate.Lvl3Password = enclosureVM.Lvl3Password;
+                enclosureToUpdate.Lvl4Password = enclosureVM.Lvl4Password;
+                enclosureToUpdate.Lvl5Password = enclosureVM.Lvl5Password;
+                enclosureToUpdate.Object = enclosureVM.Object;
                 enclosureToUpdate.Supervisor = enclosureVM.EmployeID == null ? null : employeService.GetByID(enclosureVM.EmployeID);
+                enclosureToUpdate.Version = enclosureVM.Version;
 
                 List<Block> blocks = JsonConvert.DeserializeObject<List<Block>>(enclosureVM.BlocksJSON);
                 if (enclosureToUpdate.Blocks == null) enclosureToUpdate.Blocks = new List<Block>();
@@ -211,10 +235,17 @@ namespace EnclosuresASP.PL.Controllers
                         enclosureToUpdate.Blocks.Add(block);
                     }
                 }
-
-                enclosureService.Update(enclosureToUpdate);
-                enclosureService.Save();
-                return Redirect(returnUrl);
+                try
+                {
+                    enclosureService.Update(enclosureToUpdate);
+                    enclosureService.Save();
+                    return Redirect(returnUrl);
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    ModelState.AddModelError("", "Объект был изменён другим пользователем. Внесённые вами изменения сохранены не будут. Откройте объект заново, чтобы отобразить актуальные данные.");
+                }
+               
             }
             if (enclosureVM.EmployeID != null)
                 PopulateEmployeList(enclosureVM, enclosureVM.EmployeID);
@@ -241,12 +272,27 @@ namespace EnclosuresASP.PL.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id, string returnUrl)
+        public ActionResult DeleteConfirmed(Enclosure enclosure, string returnUrl)
         {
-            Enclosure enclosureToDelete = enclosureService.GetByID(id);
-            //enclosureService.Delete(id);
-            enclosureService.Save();
-            return Redirect(returnUrl);
+            try
+            {
+                enclosureService.Delete(enclosure.EnclosureID, enclosure.Version);
+                enclosureService.Save();
+                return Redirect(returnUrl);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                ModelState.AddModelError("", "Объект был изменён другим пользователем. Удаление не произведено. Ниже представлены актуализированные данные.");
+            }
+            enclosure = enclosureService.GetByID(enclosure.EnclosureID);
+            if (enclosure == null)
+            {
+                return HttpNotFound();
+            }
+            ViewBag.returnUrl = returnUrl;
+            return View(enclosure);
+
+
         }
 
         protected override void Dispose(bool disposing)

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using System;
 
 namespace EnclosuresASP.PL.Models
 {
@@ -9,19 +10,32 @@ namespace EnclosuresASP.PL.Models
         public int EnclosureID { get; set; }
 
         public string Username { get; set; }
-
-        [Required(ErrorMessage = "Обязательное поле")]
+        
         public string Number { get; set; }
+        
+        public string ElisNumber { get; set; }
+
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy'-'MM'-'dd}", ApplyFormatInEditMode = true, NullDisplayText = "Установите дату")]
+        public DateTime? AcceptanceDate { get; set; }
 
         public int? EmployeID { get; set; }
         public IEnumerable<SelectListItem> Employes { get; set; }
 
-        public string RootLogin { get; set; }
-        public string RootPassword { get; set; }
+        public string Lvl1Password { get; set; }
+        public string Lvl2Password { get; set; }
+        public string Lvl3Password { get; set; }
+        public string Lvl4Password { get; set; }
+        public string Lvl5Password { get; set; }
+
+        public string Object { get; set; }
 
         public string FilesJSON { get; set; }
 
         public string BlocksJSON { get; set; }
         public string ACSsJSON { get; set; }
+
+        [Required]
+        public Guid Version { get; set; }
     }
 }

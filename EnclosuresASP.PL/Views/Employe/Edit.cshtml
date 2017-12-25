@@ -13,6 +13,7 @@
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(model => model.EmployeID)
+        @Html.HiddenFor(model => model.Version)
         <input type="hidden" name="returnUrl" value="@ViewBag.returnUrl" />
 
         <div class="form-group">

@@ -8,7 +8,12 @@ namespace EnclosuresASP.DAL.Entities
     public class Block : IVersionedRow
     {
         public int BlockID { get; set; }
-        public string UID { get; set; } //уид предполагается полностью уникальным
+
+        public string UID { get; set; }
+
+        public string Number { get; set; }
+
+        public string SoftwareVersion { get; set; }
 
         [Required]
         public int EnclosureID { get; set; }

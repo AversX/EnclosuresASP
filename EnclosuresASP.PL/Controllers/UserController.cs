@@ -17,6 +17,7 @@ namespace EnclosuresASP.PL.Controllers
         [HttpGet]
         public ActionResult Login(string returnUrl)
         {
+            if (returnUrl == "/") returnUrl = "/Enclosure";
             ViewBag.returnUrl = returnUrl;
             return View();
         }

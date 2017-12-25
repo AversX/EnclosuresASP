@@ -17,12 +17,24 @@
     <hr />
 
     <div class="form-horizontal">
-        @Html.HiddenFor(m => m.EnclosureID)
+        <div class="form-group">
+            @Html.Label("Номер ШЭ", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.DisplayFor(m => Model.Number, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
 
         <div class="form-group">
-            @Html.Label("Номер", htmlAttributes: new { @class = "control-label col-md-4" })
+            @Html.Label("Номер ЭЛИС", htmlAttributes: new { @class = "control-label col-md-4" })
             <div class="col-md-8">
-                @Html.DisplayFor(m => m.Number, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.DisplayFor(m => Model.ElisNumber, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Объект", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.DisplayFor(m => Model.Object, new { htmlAttributes = new { @class = "form-control" } })
             </div>
         </div>
 
@@ -36,143 +48,157 @@
         </div>
 
         <div class="form-group">
-            @Html.Label("Root-логин", htmlAttributes: new { @class = "control-label col-md-4" })
+            @Html.Label("Дата приёмки", htmlAttributes: new { @class = "control-label col-md-4" })
             <div class="col-md-8">
-                @if (Model.RootLogin?.Length > 0)
-                {
-                    @Html.DisplayFor(model => model.RootLogin);
-                }
-                else
-                {
-                    @Html.Label("Root-логин не присвоен");
-                }
+                @Html.DisplayFor(x => x.AcceptanceDate, new { htmlAttributes = new { @class = "form-control" } })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.Label("Root-пароль", htmlAttributes: new { @class = "control-label col-md-4" })
+            @Html.Label("Пароль 1 уровня", htmlAttributes: new { @class = "control-label col-md-4" })
             <div class="col-md-8">
-                @if (Model.RootPassword?.Length > 0)
-                {
-                    @Html.DisplayFor(model => model.RootPassword);
-                }
-                else
-                {
-                    @Html.Label("Root-пароль не присвоен");
-                }
+                @Html.DisplayFor(m => m.Lvl1Password, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Пароль 2 уровня", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.DisplayFor(m => m.Lvl2Password, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Пароль 3 уровня", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.DisplayFor(m => m.Lvl3Password, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Пароль 4 уровня", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.DisplayFor(m => m.Lvl4Password, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Пароль 5 уровня", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.DisplayFor(m => m.Lvl5Password, new { htmlAttributes = new { @class = "form-control" } })
             </div>
         </div>
     </div>
+</div>
 
     <div class="form-group">
-        <div class="col-md-5 col-md-offset-3">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    Блоки
-                </div>
-                <table class="table table-striped">
+    <div class="col-md-5 col-md-offset-3">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                Блоки
+            </div>
+            <table class="table table-striped">
+                <tr>
+                    <th class="text-center">Название</th>
+                    <th class="text-center">УИД</th>
+                </tr>
+                @if (Model.Blocks?.Count == 0)
+                {
                     <tr>
-                        <th class="text-center">Название</th>
-                        <th class="text-center">УИД</th>
+                        <td colspan="2" class="text-center">Нет ни одного блока</td>
                     </tr>
-                    @if (Model.Blocks?.Count == 0)
+                }
+                else
+                {
+                    foreach (var item in Model.Blocks)
                     {
                         <tr>
-                            <td colspan="2" class="text-center">Нет ни одного блока</td>
+                            <td class="text-center">
+                                @Html.DisplayFor(modelItem => item.BlockName.BlockName)
+                            </td>
+                            <td class="text-center">
+                                @Html.DisplayFor(modelItem => item.UID)
+                            </td>
+                        </tr>
+                    }
+                }
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="form-group">
+        <div class="col-md-offset-3 col-md-5">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    Файлы
+                </div>
+
+                <table class="table table-striped">
+                    <tr>
+                        <th class="text-center">Имя</th>
+                        <th class="text-center">Размер</th>
+                        <th class="text-center">Скачать</th>
+                    </tr>
+                    @if (Model.Files?.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="2" class="text-center">Не загружено ниодного файла</td>
                         </tr>
                     }
                     else
                     {
-                        foreach (var item in Model.Blocks)
+                        foreach (var item in Model.Files)
                         {
-                            <tr>
-                                <td class="text-center">
-                                    @Html.DisplayFor(modelItem => item.BlockName.BlockName)
+                            <tr valign="middle">
+                                <td align="center">
+                                    @Html.DisplayFor(modelItem => item.Filename)
                                 </td>
-                                <td class="text-center">
-                                    @Html.DisplayFor(modelItem => item.UID)
+                                <td align="center">
+                                    @{
+                                        string size;
+                                        if (item.Bytes.Length > 1048576)
+                                        {
+                                            size = System.Math.Round(item.Bytes.Length / 1048576.0, 2) + " МБ";
+                                        }
+                                        else if (item.Bytes.Length > 1024)
+                                        {
+                                            size = System.Math.Round(item.Bytes.Length / 1024.0, 2) + " КБ";
+                                        }
+                                        else
+                                        {
+                                            size = item.Bytes.Length + " Б";
+                                        }
+                                    }
+                                    @Html.DisplayFor(modelItem => size)
+                                </td>
+                                <td align="center">
+                                    <a href="@Url.Action("DownloadFile", new { fileID = item.EnclosureFileID })" title="Скачать"><div class="span-center"><img src="~/Content/images/boxdownload32.png" alt="" width="32" height="32" /></div></a>
                                 </td>
                             </tr>
-                        }
-                    }
+                                            }
+                                        }
                 </table>
             </div>
         </div>
     </div>
 
     <div class="form-group">
-        <div class="form-group">
-            <div class="col-md-offset-3 col-md-5">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        Файлы
-                    </div>
-
-                    <table class="table table-striped">
-                        <tr>
-                            <th class="text-center">Имя</th>
-                            <th class="text-center">Размер</th>
-                            <th class="text-center">Скачать</th>
-                        </tr>
-                        @if (Model.Files?.Count == 0)
-                        {
-                            <tr>
-                                <td colspan="2" class="text-center">Не загружено ниодного файла</td>
-                            </tr>
-                        }
-                        else
-                        {
-                            foreach (var item in Model.Files)
-                            {
-                                <tr valign="middle">
-                                    <td align="center">
-                                        @Html.DisplayFor(modelItem => item.Filename)
-                                    </td>
-                                    <td align="center">
-                                        @{
-                                            string size;
-                                            if (item.Bytes.Length > 1048576)
-                                            {
-                                                size = System.Math.Round(item.Bytes.Length / 1048576.0, 2) + " МБ";
-                                            }
-                                            else if (item.Bytes.Length > 1024)
-                                            {
-                                                size = System.Math.Round(item.Bytes.Length / 1024.0, 2) + " КБ";
-                                            }
-                                            else
-                                            {
-                                                size = item.Bytes.Length + " Б";
-                                            }
-                                        }
-                                        @Html.DisplayFor(modelItem => size)
-                                    </td>
-                                    <td align="center">
-                                        <a href="@Url.Action("DownloadFile", new { fileID = item.EnclosureFileID })" title="Скачать"><div class="span-center"><img src="~/Content/images/boxdownload32.png" alt="" width="32" height="32" /></div></a>
-                                    </td>
-                                </tr>
-                            }
-                        }
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <div class="btn-group">
-                    <button id="editBtn" name="cancelBtn" class="k-primary" type="button" data-url="@Url.Action("Edit", "Enclosure", new { id = Model.EnclosureID, returnUrl = HttpContext.Current.Request.Url.AbsoluteUri })">Редактировать</button>
-                    <button id="cancelBtn" name="cancelBtn" class="k-default" type="button" data-url="@Url.Action("Index", "Enclosure")">Закрыть</button>
-                    <script type="text/javascript">
-                        $("#editBtn").kendoButton().click(function () {
-                            var url = $(this).data('url');
-                            window.location.href = url;
-                        });
-                        $("#cancelBtn").kendoButton().click(function () {
-                            var url = $(this).data('url');
-                            window.location.href = url;
-                        });
-                    </script>
-                </div>
+        <div class="col-md-offset-2 col-md-10">
+            <div class="btn-group">
+                <button id="editBtn" name="cancelBtn" class="k-primary" type="button" data-url="@Url.Action("Edit", "Enclosure", new { id = Model.EnclosureID, returnUrl = HttpContext.Current.Request.Url.AbsoluteUri })">Редактировать</button>
+                <button id="cancelBtn" name="cancelBtn" class="k-default" type="button" data-url="@Url.Action("Index", "Enclosure")">Закрыть</button>
+                <script type="text/javascript">
+                    $("#editBtn").kendoButton().click(function () {
+                        var url = $(this).data('url');
+                        window.location.href = url;
+                    });
+                    $("#cancelBtn").kendoButton().click(function () {
+                        var url = $(this).data('url');
+                        window.location.href = url;
+                    });
+                </script>
             </div>
         </div>
     </div>

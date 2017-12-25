@@ -15,14 +15,26 @@
 <div class="row">
     <h4>Удалить шкаф №@Model.Number?</h4>
     <hr />
-
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     <div class="form-horizontal">
-        @Html.HiddenFor(m => m.EnclosureID)
+        <div class="form-group">
+            @Html.Label("Номер ШЭ", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.DisplayFor(m => Model.Number, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
 
         <div class="form-group">
-            @Html.Label("Номер", htmlAttributes: new { @class = "control-label col-md-4" })
+            @Html.Label("Номер ЭЛИС", htmlAttributes: new { @class = "control-label col-md-4" })
             <div class="col-md-8">
-                @Html.DisplayFor(m => m.Number, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.DisplayFor(m => Model.ElisNumber, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Объект", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.DisplayFor(m => Model.Object, new { htmlAttributes = new { @class = "form-control" } })
             </div>
         </div>
 
@@ -36,30 +48,44 @@
         </div>
 
         <div class="form-group">
-            @Html.Label("Root-логин", htmlAttributes: new { @class = "control-label col-md-4" })
+            @Html.Label("Дата приёмки", htmlAttributes: new { @class = "control-label col-md-4" })
             <div class="col-md-8">
-                @if (Model.RootLogin?.Length > 0)
-                {
-                    @Html.DisplayFor(model => model.RootLogin);
-                }
-                else
-                {
-                    @Html.Label("Root-логин не присвоен");
-                }
+                @Html.DisplayFor(x => x.AcceptanceDate, new { htmlAttributes = new { @class = "form-control" } })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.Label("Root-пароль", htmlAttributes: new { @class = "control-label col-md-4" })
+            @Html.Label("Пароль 1 уровня", htmlAttributes: new { @class = "control-label col-md-4" })
             <div class="col-md-8">
-                @if (Model.RootPassword?.Length > 0)
-                {
-                    @Html.DisplayFor(model => model.RootPassword);
-                }
-                else
-                {
-                    @Html.Label("Root-пароль не присвоен");
-                }
+                @Html.DisplayFor(m => m.Lvl1Password, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Пароль 2 уровня", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.DisplayFor(m => m.Lvl2Password, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Пароль 3 уровня", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.DisplayFor(m => m.Lvl3Password, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Пароль 4 уровня", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.DisplayFor(m => m.Lvl4Password, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Пароль 5 уровня", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.DisplayFor(m => m.Lvl5Password, new { htmlAttributes = new { @class = "form-control" } })
             </div>
         </div>
     </div>
@@ -156,6 +182,22 @@
         @using (Html.BeginForm())
         {
             @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.EnclosureID)
+            @Html.HiddenFor(m => m.Version)
+            @Html.HiddenFor(m => m.Blocks)
+            @Html.HiddenFor(m => m.Files)
+            @Html.HiddenFor(m => m.Number)
+            @Html.HiddenFor(m => m.ElisNumber)
+            @Html.HiddenFor(m => m.AcceptanceDate)
+            @Html.HiddenFor(m => m.Object)
+            @Html.HiddenFor(m => m.Lvl1Password)
+            @Html.HiddenFor(m => m.Lvl2Password)
+            @Html.HiddenFor(m => m.Lvl3Password)
+            @Html.HiddenFor(m => m.Lvl4Password)
+            @Html.HiddenFor(m => m.Lvl5Password)
+            @Html.HiddenFor(m => m.Supervisor)
+            @Html.HiddenFor(m => m.Temporary)
+            @Html.HiddenFor(m => m.Username)
             <input type="hidden" name="id" value="@Model.EnclosureID" />
             <input type="hidden" name="returnUrl" value="@ViewBag.returnUrl" />
             <div class="form-group">

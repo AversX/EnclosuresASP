@@ -37,7 +37,7 @@
 @using (Html.BeginForm("Edit", "Enclosure", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
-
+    @Html.HiddenFor(x=>x.Version)
     <div class="form-horizontal">
         <h4>Шкаф №@Model.Number</h4>
         <hr />
@@ -47,7 +47,7 @@
         <input type="hidden" name="returnUrl" value="@ViewBag.returnUrl" />
         <div class="row">
             <div class="form-group">
-                @Html.Label("Номер", htmlAttributes: new { @class = "control-label col-md-4" })
+                @Html.Label("Номер ШЭ", htmlAttributes: new { @class = "control-label col-md-4" })
                 <div class="col-md-8">
                     @Html.EditorFor(m => Model.Number, new { htmlAttributes = new { @class = "form-control" } })
                     @Html.ValidationMessageFor(m => m.Number, "", new { @class = "text-danger" })
@@ -55,24 +55,72 @@
             </div>
 
             <div class="form-group">
+                @Html.Label("Номер ЭЛИС", htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    @Html.EditorFor(m => Model.ElisNumber, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(m => m.ElisNumber, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Объект", htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    @Html.EditorFor(m => Model.Object, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(m => m.Object, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
                 @Html.Label("Принял", htmlAttributes: new { @class = "control-label col-md-4" })
                 <div class="col-md-8">
                     @Html.DropDownListFor(m => Model.EmployeID, Model.Employes, "Выберите сотрудника...", htmlAttributes: new { @class = "form-control" })
-                    @Html.ValidationMessageFor(m => m.EmployeID, "", new { @class = "text-danger" })
                 </div>
             </div>
 
             <div class="form-group">
-                @Html.Label("Root логин", htmlAttributes: new { @class = "control-label col-md-4" })
+                @Html.Label("Дата приёмки", htmlAttributes: new { @class = "control-label col-md-4" })
                 <div class="col-md-8">
-                    @Html.EditorFor(m => m.RootLogin, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.EditorFor(x => x.AcceptanceDate, new { htmlAttributes = new { @class = "datepicker"} })
                 </div>
             </div>
 
             <div class="form-group">
-                @Html.Label("Root пароль", htmlAttributes: new { @class = "control-label col-md-4" })
+                @Html.Label("Пароль 1 уровня", htmlAttributes: new { @class = "control-label col-md-4" })
                 <div class="col-md-8">
-                    @Html.EditorFor(m => m.RootPassword, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.EditorFor(m => m.Lvl1Password, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(m => m.Lvl1Password, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Пароль 2 уровня", htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    @Html.EditorFor(m => m.Lvl2Password, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(m => m.Lvl2Password, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Пароль 3 уровня", htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    @Html.EditorFor(m => m.Lvl3Password, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(m => m.Lvl3Password, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Пароль 4 уровня", htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    @Html.EditorFor(m => m.Lvl4Password, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(m => m.Lvl4Password, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Пароль 5 уровня", htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    @Html.EditorFor(m => m.Lvl5Password, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(m => m.Lvl5Password, "", new { @class = "text-danger" })
                 </div>
             </div>
         </div>
