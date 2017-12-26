@@ -127,7 +127,7 @@ namespace EnclosuresASP.PL.Controllers
                 Enclosures = enclosureService.Get().Where(x => x.Supervisor?.EmployeID == id).ToList(),
                 EmployeID = employe.EmployeID,
                 EmpPosition = employe.EmpPosition ?? null,
-                PositionID = employe.EmpPosition.PositionID,
+                PositionID = employe.EmpPosition?.PositionID,
                 FullName = employe.FullName,
                 Version = employe.Version
             };
@@ -153,16 +153,24 @@ namespace EnclosuresASP.PL.Controllers
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                ModelState.AddModelError("", "Объект был изменён другим пользователем. Удаление невозможно. Откройте объект заново, чтобы отобразить актуальные данные.");
+                ModelState.AddModelError("", "Объект был изменён другим пользователем. Удаление не произведено. Ниже представлены актуализированные данные.");
             }
             PositionService positionService = new PositionService(employeService.unitOfWork);
+            Employe employe = employeService.GetByID(employeVM.EmployeID);
+            if (employe == null)
+            {
+                return HttpNotFound();
+            }
             employeVM = new EmployeVM
             {
-                FullName = employeVM.FullName,
-                Enclosures = enclosureService.Get().Where(x => x.Supervisor?.EmployeID == employeVM.EmployeID).ToList(),
-                EmpPosition = positionService.GetByID(employeVM.PositionID),
-                Version = employeVM.Version
+                Enclosures = enclosureService.Get().Where(x => x.Supervisor?.EmployeID == employe.EmployeID).ToList(),
+                EmployeID = employe.EmployeID,
+                EmpPosition = employe.EmpPosition ?? null,
+                PositionID = employe.EmpPosition.PositionID,
+                FullName = employe.FullName,
+                Version = employe.Version
             };
+            ViewBag.returnUrl = returnUrl;
             return View(employeVM);
         }
 

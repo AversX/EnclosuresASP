@@ -16,15 +16,18 @@ namespace EnclosuresASP.PL.Models
         public string Number { get; set; }
 
         public string SoftwareVersion { get; set; }
+        
+        public string Comment { get; set; }
 
         public int? TypicalBlockID { get; set; }
         public IEnumerable<SelectListItem> TypicalBlocks { get; set; }
         public TypicalBlock BlockName { get; set; }
 
-        public string Blocks { get; set; }
-
-        public int EnclosureID { get; set; }
+        public int? EnclosureID { get; set; }
 
         public Guid BlockGuid { get; set; }
+
+        [Required]
+        public Guid Version { get; set; }
     }
 }

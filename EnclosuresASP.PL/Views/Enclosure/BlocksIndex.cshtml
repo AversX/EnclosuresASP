@@ -2,14 +2,17 @@
 
 <table class="table table-striped">
     <tr>
-        <th class="text-center">Название</th>
-        <th class="text-center">УИД</th>
+        <th class="text-center">Тип</th>
+        <th class="text-center">UID</th>
+        <th class="text-center">Заводской №</th>
+        <th class="text-center">Версия ПО</th>
+        <th class="text-center">Комментарий</th>
         <th class="text-center">Действия</th>
     </tr>
     @if (Model.Count() == 0)
     {
         <tr>
-            <td colspan="3" class="text-center">Нет ни одного блока</td>
+            <td colspan="6" class="text-center">Нет ни одного блока</td>
         </tr>
     }
     else
@@ -24,11 +27,20 @@
                     @Html.DisplayFor(modelItem => Model[i].UID)
                 </td>
                 <td class="text-center">
+                    @Html.DisplayFor(modelItem => Model[i].Number)
+                </td>
+                <td class="text-center">
+                    @Html.DisplayFor(modelItem => Model[i].SoftwareVersion)
+                </td>
+                <td class="text-center">
+                    @Html.DisplayFor(modelItem => Model[i].Comment)
+                </td>
+                <td class="text-center">
                     @{
                         string editBtnName = "editBlockBtn" + i;
                         string deleteBtnName = "deleteBlockBtn" + i;
-                        <button id=@editBtnName name=@editBtnName class="blockEditBtn k-primary" type="button" data-url="@Url.Action("Edit", "BlockPartial", new { blocks = "VALUE", blockGuid = Json.Encode(Model[i].BlockGuid) })">Редактировать</button>
-                        <button id=@deleteBtnName name=@deleteBtnName class="blockDeleteBtn k-primary" type="button" data-url="@Url.Action("Delete", "BlockPartial", new { blocks = "VALUE", blockGuid = Json.Encode(Model[i].BlockGuid) })">Удалить</button>
+                        <button id=@editBtnName name=@editBtnName class="blockEditBtn k-primary" type="button" data-url="@Url.Action("EditBlock", "Enclosure", new { id = Model[i].EnclosureID, blockGuid = Json.Encode(Model[i].BlockGuid) })">Редактировать</button>
+                        <button id=@deleteBtnName name=@deleteBtnName class="blockDeleteBtn k-primary" type="button" data-url="@Url.Action("DeleteBlock", "Enclosure", new { id = Model[i].EnclosureID, blockGuid = Json.Encode(Model[i].BlockGuid) })">Удалить</button>
                     }
                 </td>
             </tr>
@@ -49,7 +61,6 @@
 
     $('.blockDeleteBtn').kendoButton().click(function () {
         var url = $(this).data('url');
-        url = url.replace("VALUE", $('#BlocksJSON').val());
         $.get(url, function (data) {
 
             $('#blockModalBody').html(data);

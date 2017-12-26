@@ -106,14 +106,6 @@
     <Compile Include="Identity\AppUser.cs" />
     <Compile Include="Infrastructure\AppRoleManager.cs" />
     <Compile Include="Infrastructure\AppUserManager.cs" />
-    <Compile Include="Migrations\201712250457563_add.cs" />
-    <Compile Include="Migrations\201712250457563_add.Designer.cs">
-      <DependentUpon>201712250457563_add.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201712250730124_add1.cs" />
-    <Compile Include="Migrations\201712250730124_add1.Designer.cs">
-      <DependentUpon>201712250730124_add1.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -122,14 +114,6 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201712250457563_add.resx">
-      <DependentUpon>201712250457563_add.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201712250730124_add1.resx">
-      <DependentUpon>201712250730124_add1.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

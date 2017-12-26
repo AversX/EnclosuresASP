@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using System.Data.Entity.Infrastructure;
 
 namespace EnclosuresASP.PL.Controllers
 {
@@ -40,9 +41,11 @@ namespace EnclosuresASP.PL.Controllers
                 {
                     UID = blockVM.UID,
                     EnclosureID = blockVM.EnclosureID,
-                    BlockName = blockVM.TypicalBlockID == null ? null : typicalBlockService.GetByID(blockVM.TypicalBlockID)
+                    BlockName = blockVM.TypicalBlockID == null ? null : typicalBlockService.GetByID(blockVM.TypicalBlockID),
+                    Number = blockVM.Number,
+                    SoftwareVersion = blockVM.SoftwareVersion,
+                    Comment = blockVM.Comment
                 };
-
                 blockService.Insert(block);
                 blockService.Save();
                 return RedirectToAction("Index");
@@ -66,7 +69,10 @@ namespace EnclosuresASP.PL.Controllers
             BlockVM blockVM = new BlockVM()
             {
                 BlockID = block.BlockID,
-                UID = block.UID
+                UID = block.UID,
+                Number = block.Number,
+                SoftwareVersion = block.SoftwareVersion,
+                Comment = block.Comment
             };
             if (block.BlockName == null)
             {
@@ -93,6 +99,9 @@ namespace EnclosuresASP.PL.Controllers
 
                 blockToUpdate.UID = blockVM.UID;
                 blockToUpdate.BlockName = blockVM.TypicalBlockID == null ? null : typicalBlockService.GetByID(blockVM.TypicalBlockID);
+                blockToUpdate.Number = blockVM.Number;
+                blockToUpdate.SoftwareVersion = blockVM.SoftwareVersion;
+                blockToUpdate.Comment = blockVM.Comment;
 
                 blockService.Update(blockToUpdate);
                 blockService.Save();
@@ -118,7 +127,10 @@ namespace EnclosuresASP.PL.Controllers
             {
                 UID = block.UID,
                 BlockGuid = block.BlockGuid,
-                BlockName = block.BlockName
+                BlockName = block.BlockName,
+                Number = block.Number,
+                SoftwareVersion = block.SoftwareVersion,
+                Comment = block.Comment
             };
             ViewBag.returnUrl = returnUrl;
             return View(blockVM);
@@ -126,11 +138,34 @@ namespace EnclosuresASP.PL.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id, string returnUrl)
+        public ActionResult DeleteConfirmed(BlockVM blockVM, string returnUrl)
         {
-           // blockService.Delete(id);
-            blockService.Save();
-            return Redirect(returnUrl);
+            try
+            {
+                blockService.Delete(blockVM.BlockID, blockVM.Version);
+                blockService.Save();
+                return Redirect(returnUrl);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                ModelState.AddModelError("", "Объект был изменён другим пользователем. Удаление не произведено. Ниже представлены актуализированные данные.");
+            }
+            Block block = blockService.GetByID(blockVM.BlockID);
+            if (block == null)
+            {
+                return HttpNotFound();
+            }
+            blockVM = new BlockVM()
+            {
+                UID = block.UID,
+                BlockGuid = block.BlockGuid,
+                BlockName = block.BlockName,
+                Number = block.Number,
+                SoftwareVersion = block.SoftwareVersion,
+                Comment = block.Comment
+            };
+            ViewBag.returnUrl = returnUrl;
+            return View(blockVM);
         }
 
         #region Privates

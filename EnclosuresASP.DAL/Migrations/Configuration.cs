@@ -10,6 +10,7 @@ namespace EnclosuresASP.DAL.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = true;
+            ContextKey = "EnclosuresASP.DAL.EF.DataContext";
         }
 
         protected override void Seed(EnclosuresASP.DAL.EF.DataContext context)

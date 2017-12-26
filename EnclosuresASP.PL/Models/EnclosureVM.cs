@@ -30,10 +30,9 @@ namespace EnclosuresASP.PL.Models
 
         public string Object { get; set; }
 
-        public string FilesJSON { get; set; }
+        public string Comment { get; set; }
 
-        public string BlocksJSON { get; set; }
-        public string ACSsJSON { get; set; }
+        public string FilesJSON { get; set; }
 
         [Required]
         public Guid Version { get; set; }

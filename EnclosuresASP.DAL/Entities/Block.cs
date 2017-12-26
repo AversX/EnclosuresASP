@@ -15,8 +15,9 @@ namespace EnclosuresASP.DAL.Entities
 
         public string SoftwareVersion { get; set; }
 
-        [Required]
-        public int EnclosureID { get; set; }
+        public string Comment { get; set; }
+
+        public int? EnclosureID { get; set; }
 
         public virtual TypicalBlock BlockName { get; set; }
 

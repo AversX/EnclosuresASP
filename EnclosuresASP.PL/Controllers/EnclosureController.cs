@@ -52,7 +52,6 @@ namespace EnclosuresASP.PL.Controllers
             {
                 EnclosureID = enclosure.EnclosureID,
                 Username = enclosure.Username,
-                BlocksJSON = JsonConvert.SerializeObject(enclosure.Blocks),
                 AcceptanceDate = DateTime.Now
             };
             PopulateEmployeList(enclosureVM);
@@ -81,12 +80,12 @@ namespace EnclosuresASP.PL.Controllers
                 enclosure.Lvl4Password = enclosureVM.Lvl4Password;
                 enclosure.Lvl5Password = enclosureVM.Lvl5Password;
                 enclosure.Object = enclosureVM.Object;
+                enclosure.Comment = enclosureVM.Comment;
                 enclosure.Supervisor = enclosureVM.EmployeID == null ? null : employeService.GetByID(enclosureVM.EmployeID);
 
 
-                List<Block> blocks = JsonConvert.DeserializeObject<List<Block>>(enclosureVM.BlocksJSON);
+                List<Block> blocks = blockService.Get(x => x.EnclosureID == enclosure.EnclosureID).ToList();
                 if (enclosure.Blocks == null) enclosure.Blocks = new List<Block>();
-
                 if (blocks != null)
                 {
                     for (int i = 0; i < enclosure.Blocks.Count(); i++)
@@ -96,6 +95,9 @@ namespace EnclosuresASP.PL.Controllers
                         {
                             enclosure.Blocks.ToList()[i].BlockName = blocks[index].BlockName == null ? null : typicalBlockService.GetByID(blocks[index].BlockName.TypicalBlockID);
                             enclosure.Blocks.ToList()[i].UID = blocks[index].UID;
+                            enclosure.Blocks.ToList()[i].Number = blocks[index].Number;
+                            enclosure.Blocks.ToList()[i].SoftwareVersion = blocks[index].SoftwareVersion;
+                            enclosure.Blocks.ToList()[i].Comment = blocks[index].Comment;
                             blocks.RemoveAt(index);
                         }
                         else
@@ -111,22 +113,29 @@ namespace EnclosuresASP.PL.Controllers
                             BlockGuid = blocks[i].BlockGuid,
                             UID = blocks[i].UID,
                             EnclosureID = blocks[i].EnclosureID,
+                            Number = blocks[i].Number,
+                            SoftwareVersion = blocks[i].SoftwareVersion,
+                            Comment = blocks[i].Comment,
                             BlockName = blocks[i].BlockName == null ? null : typicalBlockService.GetByID(blocks[i].BlockName.TypicalBlockID)
                         };
                         enclosure.Blocks.Add(block);
                     }
                 }
 
-                if (enclosure.Files != null)
+                FileService fileService = new FileService(enclosureService.unitOfWork);
+                List<EnclosureFile> files = fileService.Get(x => x.EnclosureID == enclosure.EnclosureID).ToList();
+                if (enclosure.Files == null) enclosure.Files = new List<EnclosureFile>();
+                if (files?.Count > 0)
                 {
-                    for (int i = 0; i < enclosure.Files.Count; i++)
+                    for (int i = 0; i < files.Count; i++)
                     {
-                        enclosure.Files.ToList()[i].Temporary = false;
+                        files[i].Temporary = false;
+                        enclosure.Files.Add(files[i]);
                     }
                 }
 
                 enclosure.Temporary = false;
-                enclosureService.Insert(enclosure);
+                enclosureService.Update(enclosure);
                 enclosureService.Save();
                 return RedirectToAction("Index");
             }
@@ -161,7 +170,7 @@ namespace EnclosuresASP.PL.Controllers
                 Lvl4Password = enclosure.Lvl4Password,
                 Lvl5Password = enclosure.Lvl5Password,
                 Object = enclosure.Object,
-                BlocksJSON = JsonConvert.SerializeObject(enclosure.Blocks),
+                Comment = enclosure.Comment,
                 FilesJSON = JsonConvert.SerializeObject(enclosure.Files.Select(x => new { name = x.Filename, extension = Path.GetExtension(x.Filename), size = x.Bytes.Length }).ToList()),
                 Version = enclosure.Version
             };
@@ -200,12 +209,12 @@ namespace EnclosuresASP.PL.Controllers
                 enclosureToUpdate.Lvl4Password = enclosureVM.Lvl4Password;
                 enclosureToUpdate.Lvl5Password = enclosureVM.Lvl5Password;
                 enclosureToUpdate.Object = enclosureVM.Object;
+                enclosureToUpdate.Comment = enclosureVM.Comment;
                 enclosureToUpdate.Supervisor = enclosureVM.EmployeID == null ? null : employeService.GetByID(enclosureVM.EmployeID);
                 enclosureToUpdate.Version = enclosureVM.Version;
 
-                List<Block> blocks = JsonConvert.DeserializeObject<List<Block>>(enclosureVM.BlocksJSON);
+                List<Block> blocks = blockService.Get(x => x.EnclosureID == enclosureToUpdate.EnclosureID).ToList();
                 if (enclosureToUpdate.Blocks == null) enclosureToUpdate.Blocks = new List<Block>();
-
                 if (blocks != null)
                 {
                     for (int i = 0; i < enclosureToUpdate.Blocks.Count(); i++)
@@ -215,6 +224,9 @@ namespace EnclosuresASP.PL.Controllers
                         {
                             enclosureToUpdate.Blocks.ToList()[i].BlockName = blocks[index].BlockName == null ? null : typicalBlockService.GetByID(blocks[index].BlockName.TypicalBlockID);
                             enclosureToUpdate.Blocks.ToList()[i].UID = blocks[index].UID;
+                            enclosureToUpdate.Blocks.ToList()[i].Number = blocks[index].Number;
+                            enclosureToUpdate.Blocks.ToList()[i].SoftwareVersion = blocks[index].SoftwareVersion;
+                            enclosureToUpdate.Blocks.ToList()[i].Comment = blocks[index].Comment;
                             blocks.RemoveAt(index);
                         }
                         else
@@ -230,11 +242,28 @@ namespace EnclosuresASP.PL.Controllers
                             BlockGuid = blocks[i].BlockGuid,
                             UID = blocks[i].UID,
                             EnclosureID = blocks[i].EnclosureID,
-                            BlockName = blocks[i].BlockName == null ? null : typicalBlockService.GetByID(blocks[i].BlockName.TypicalBlockID)
+                            BlockName = blocks[i].BlockName == null ? null : typicalBlockService.GetByID(blocks[i].BlockName.TypicalBlockID),
+                            Number = blocks[i].Number,
+                            SoftwareVersion = blocks[i].SoftwareVersion,
+                            Comment = blocks[i].Comment
                         };
                         enclosureToUpdate.Blocks.Add(block);
                     }
                 }
+
+                FileService fileService = new FileService(enclosureService.unitOfWork);
+                List<EnclosureFile> files = fileService.Get(x => x.EnclosureID == enclosureToUpdate.EnclosureID).ToList();
+                if (enclosureToUpdate.Files == null) enclosureToUpdate.Files = new List<EnclosureFile>();
+                if (files?.Count > 0)
+                {
+                    for (int i = 0; i < files.Count; i++)
+                    {
+                        files[i].Temporary = false;
+                        enclosureToUpdate.Files.Add(files[i]);
+
+                    }
+                }
+
                 try
                 {
                     enclosureService.Update(enclosureToUpdate);
@@ -245,13 +274,13 @@ namespace EnclosuresASP.PL.Controllers
                 {
                     ModelState.AddModelError("", "Объект был изменён другим пользователем. Внесённые вами изменения сохранены не будут. Откройте объект заново, чтобы отобразить актуальные данные.");
                 }
-               
+
             }
             if (enclosureVM.EmployeID != null)
                 PopulateEmployeList(enclosureVM, enclosureVM.EmployeID);
             else
                 PopulateEmployeList(enclosureVM);
-            return View(enclosureVM);
+            return View("Edit", enclosureVM);
         }
 
         [HttpGet]
@@ -304,6 +333,161 @@ namespace EnclosuresASP.PL.Controllers
             base.Dispose(disposing);
         }
 
+        #region Blocks
+        [HttpGet]
+        public ActionResult BlocksIndex(int? id)
+        {
+            BlockService blockService = new BlockService(enclosureService.unitOfWork);
+            List<Block> blocks = blockService.Get(x => x.EnclosureID == id).ToList();
+            return PartialView(blocks);
+        }
+
+        [HttpGet]
+        public ActionResult CreateBlock(int id)
+        {
+            BlockVM blockVM = new BlockVM() { EnclosureID = id };
+            PopulateBlockList(blockVM);
+            return PartialView(blockVM);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreateBlock(BlockVM blockVM)
+        {
+            if (ModelState.IsValid)
+            {
+                BlockService blockService = new BlockService(enclosureService.unitOfWork);
+                TypicalBlockService typicalBlockService = new TypicalBlockService(enclosureService.unitOfWork);
+                Block block = new Block()
+                {
+                    UID = blockVM.UID,
+                    EnclosureID = blockVM.EnclosureID,
+                    BlockName = blockVM.TypicalBlockID == null ? null : typicalBlockService.GetByID(blockVM.TypicalBlockID),
+                    Number = blockVM.Number,
+                    SoftwareVersion = blockVM.SoftwareVersion,
+                    Comment = blockVM.Comment
+                };
+                blockService.Insert(block);
+                blockService.Save();
+                return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+            }
+            PopulateBlockList(blockVM);
+            return PartialView(blockVM);
+        }
+
+        [HttpGet]
+        public ActionResult EditBlock(int? id, string blockGuid)
+        {
+            BlockService blockService = new BlockService(enclosureService.unitOfWork);
+            Guid BlockGuid = JsonConvert.DeserializeObject<Guid>(blockGuid);
+            Block block = blockService.Get(x => x.BlockGuid == BlockGuid).FirstOrDefault();
+            if (block != null)
+            {
+                BlockVM blockVM = new BlockVM()
+                {
+                    UID = block.UID,
+                    BlockGuid = block.BlockGuid,
+                    BlockName = block.BlockName,
+                    Number = block.Number,
+                    SoftwareVersion = block.SoftwareVersion,
+                    Comment = block.Comment,
+                    EnclosureID = block.EnclosureID,
+                    Version = block.Version
+                };
+                if (block.BlockName == null)
+                    blockVM.TypicalBlockID = null;
+                else
+                    blockVM.TypicalBlockID = block.BlockName.TypicalBlockID;
+
+                PopulateBlockList(blockVM, blockVM.TypicalBlockID);
+                return PartialView(blockVM);
+            }
+            else return null;
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditBlock(BlockVM blockVM, string blockGuid)
+        {
+            if (ModelState.IsValid)
+            {
+                TypicalBlockService typicalBlockService = new TypicalBlockService();
+                BlockService blockService = new BlockService(enclosureService.unitOfWork);
+                Guid BlockGuid = Guid.Parse(blockGuid);
+                Block block = blockService.Get(x => x.BlockGuid == BlockGuid).FirstOrDefault();
+                if (block!=null)
+                {
+                    block.UID = blockVM.UID;
+                    block.BlockName = blockVM.TypicalBlockID == null ? null : typicalBlockService.GetByID(blockVM.TypicalBlockID);
+                    block.Number = blockVM.Number;
+                    block.SoftwareVersion = blockVM.SoftwareVersion;
+                    block.Comment = blockVM.Comment;
+                    block.Version = blockVM.Version;
+                    blockService.Update(block);
+                    blockService.Save();
+                }
+                return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+            }
+            PopulateBlockList(blockVM);
+            return PartialView(blockVM);
+        }
+
+        [HttpGet]
+        public ActionResult DeleteBlock(int? id, string blockGuid)
+        {
+            BlockService blockService = new BlockService(enclosureService.unitOfWork);
+            Guid BlockGuid = JsonConvert.DeserializeObject<Guid>(blockGuid);
+            Block block = blockService.Get(x => x.BlockGuid == BlockGuid).FirstOrDefault();
+            if (block != null)
+            {
+                BlockVM blockVM = new BlockVM()
+                {
+                    UID = block.UID,
+                    BlockGuid = block.BlockGuid,
+                    BlockName = block.BlockName,
+                    Number = block.Number,
+                    SoftwareVersion = block.SoftwareVersion,
+                    Comment = block.Comment,
+                    EnclosureID = block.EnclosureID,
+                    Version = block.Version
+                };
+                return PartialView(blockVM);
+            }
+            else return null;
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteBlock(BlockVM blockVM, string blockGuid)
+        { //VERSION!
+            BlockService blockService = new BlockService(enclosureService.unitOfWork);
+            Guid BlockGuid = JsonConvert.DeserializeObject<Guid>(blockGuid);
+            Block block = blockService.Get(x => x.BlockGuid == BlockGuid).FirstOrDefault();
+            try
+            {
+                blockService.Delete(block);
+                blockService.Save();
+                return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                ModelState.AddModelError("", "Объект был изменён другим пользователем. Удаление не произведено. Ниже представлены актуализированные данные.");
+            }
+            blockVM = new BlockVM()
+            {
+                UID = block.UID,
+                BlockGuid = block.BlockGuid,
+                BlockName = block.BlockName,
+                Number = block.Number,
+                SoftwareVersion = block.SoftwareVersion,
+                Comment = block.Comment,
+                EnclosureID = block.EnclosureID,
+                Version = block.Version
+            };
+            return PartialView(blockVM);
+        }
+        #endregion
+
         #region Privates
         private void PopulateEmployeList(EnclosureVM encVM, object selectedEmploye = null)
         {
@@ -311,15 +495,22 @@ namespace EnclosuresASP.PL.Controllers
             SelectList empSelectList = new SelectList(employeService.Get().Select(emp => new SelectListItem { Text = emp.FullName + (emp.EmpPosition == null ? string.Empty : ", " + emp.EmpPosition.PosName), Value = emp.EmployeID.ToString() }), selectedEmploye);
             encVM.Employes = (IEnumerable<SelectListItem>)(empSelectList.Items);
         }
+
+        private void PopulateBlockList(BlockVM blockVM, object selectedBlocks = null)
+        {
+            TypicalBlockService typicalBlock = new TypicalBlockService();
+            SelectList tBlockSelectList = new SelectList(typicalBlock.Get().Select(emp => new SelectListItem { Text = emp.BlockName, Value = emp.TypicalBlockID.ToString() }), selectedBlocks);
+            blockVM.TypicalBlocks = (IEnumerable<SelectListItem>)(tBlockSelectList.Items);
+        }
         #endregion
 
         #region File
         public ActionResult SaveFile(IEnumerable<HttpPostedFileBase> files, int id)
         {
             Enclosure enclosure = enclosureService.GetByID(id);
+            FileService fileService = new FileService(enclosureService.unitOfWork);
             if (files != null)
             {
-                if (enclosure.Files == null) enclosure.Files = new List<EnclosureFile>();
                 MemoryStream memoryStream = new MemoryStream();
                 foreach (HttpPostedFileBase file in files)
                 {
@@ -329,29 +520,34 @@ namespace EnclosuresASP.PL.Controllers
                         Filename = Path.GetFileName(file.FileName),
                         Bytes = memoryStream.ToArray(),
                         MimeType = MIME.GetMimeType(Path.GetFileName(file.FileName)),
-                        Temporary = true
+                        Temporary = true,
+                        EnclosureVersion = enclosure.Version.ToString(),
+                        EnclosureID = enclosure.EnclosureID
                     };
-
-                    if (!enclosure.Files.Contains(enclosureFile)) enclosure.Files.Add(enclosureFile);
-                    else return Content("Ошибка загрузки");
+                    fileService.Insert(enclosureFile);
+                    fileService.Save();
                 }
+                return Content("");
             }
-            enclosureService.Update(enclosure);
-            enclosureService.Save();
-            return Content("");
+            else return Content("Error");
         }
 
         public ActionResult RemoveFile(string[] fileNames, int id)
         {
             if (fileNames != null)
             {
+                Enclosure enclosure = enclosureService.GetByID(id);
                 FileService fileService = new FileService(enclosureService.unitOfWork);
                 foreach (string fileName in fileNames)
                 {
                     string filename = Path.GetFileName(fileName);
-                    List<EnclosureFile> enclosureFiles = fileService.Get(x => x.EnclosureID == id && x.Filename == filename).ToList();
-                    for (int i = 0; i < enclosureFiles.Count; i++)
-                        fileService.Delete(enclosureFiles[i]);
+                    List<EnclosureFile> enclosureFiles = fileService.Get(x => x.EnclosureID == enclosure.EnclosureID && x.Filename == filename).ToList();
+                    if (enclosureFiles?.Count >= 0)
+                        for (int i = 0; i < enclosureFiles.Count; i++)
+                        {
+                            fileService.Delete(enclosureFiles[i]);
+                        }
+                    else return Content("Ошибка удаления");
                 }
                 fileService.Save();
                 return Content("");

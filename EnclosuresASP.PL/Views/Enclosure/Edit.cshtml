@@ -1,6 +1,6 @@
 ﻿<style type="text/css">
     .k-upload {
-        width: 500px;
+        width: 550px;
     }
     .k-remove{
         display :inline;
@@ -123,37 +123,42 @@
                     @Html.ValidationMessageFor(m => m.Lvl5Password, "", new { @class = "text-danger" })
                 </div>
             </div>
+
+            <div class="form-group">
+                @Html.Label("Комментарий", htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    @Html.EditorFor(m => m.Comment, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(m => m.Comment, "", new { @class = "text-danger" })
+                </div>
+            </div>
         </div>
 
-        @Html.HiddenFor(m => m.BlocksJSON)
         <div class="row">
-            <div class="col-md-5 col-md-offset-3">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        Блоки
-                    </div>
-                    <div id="blocksTable">
-                        @Html.Action("Index", "BlockPartial", new { blocks = Model.BlocksJSON })
-                    </div>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    Блоки
+                </div>
+                <div id="blocksTable">
+                    @Html.Action("BlocksIndex", "Enclosure", new { id = Model.EnclosureID })
                 </div>
             </div>
 
             <div class="form-group">
                 <div class="col-md-1">
-                    <button id="addBlockBtn" type="button" class="btn btn-primary">Добавить</button>
+                    <button id="addBlockBtn" type="button" class="btn btn-primary" data-url="@Url.Action("CreateBlock", "Enclosure", new { id = Model.EnclosureID })">Добавить</button>
                 </div>
             </div>
         </div>
 
         @Html.Hidden("existing-files", Model.FilesJSON)
         <div class="form-group">
-            <div class="col-md-offset-3 col-md-5">
+            <div class="col-md-offset-2 col-md-10">
                 <input name="files" id="files" type="file" />
             </div>
         </div>
 
         <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
+            <div class="col-md-6 col-md-offset-2">
                 <div class="btn-group">
                     <button id="submitBtn" name="submitBtn" class="k-primary" type="submit">Применить</button>
                     <button id="cancelBtn" name="cancelBtn" class="k-default" type="button" data-url="@ViewBag.returnUrl">Отмена</button>
@@ -165,8 +170,7 @@
 
 <script type="text/javascript">
     $('#addBlockBtn').click(function () {
-        var url = '@Url.Action("Create", "BlockPartial", new { blocks = "VALUE" })';
-        url = url.replace("VALUE", $('#BlocksJSON').val());
+        var url = $(this).data('url');
         $.get(url, function (data) {
             $('#blockModalBody').html(data);
             $('#blockModal').modal('show');

@@ -28,6 +28,8 @@ namespace EnclosuresASP.DAL.Entities
 
         public string Object { get; set; }
 
+        public string Comment { get; set; }
+
         public string Username { get; set; }
 
         public virtual ICollection<EnclosureFile> Files { get; set; }

@@ -218,7 +218,6 @@
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\BlockController.cs" />
-    <Compile Include="Controllers\BlockPartialController.cs" />
     <Compile Include="Controllers\EmployeController.cs" />
     <Compile Include="Controllers\EnclosureController.cs" />
     <Compile Include="Controllers\PositionController.cs" />
@@ -2432,10 +2431,10 @@
     <Content Include="Views\Admin\EditUser.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\User\Login.cshtml" />
-    <Content Include="Views\BlockPartial\Create.cshtml" />
-    <Content Include="Views\BlockPartial\Index.cshtml" />
-    <Content Include="Views\BlockPartial\Edit.cshtml" />
-    <Content Include="Views\BlockPartial\Delete.cshtml" />
+    <Content Include="Views\Enclosure\CreateBlock.cshtml" />
+    <Content Include="Views\Enclosure\BlocksIndex.cshtml" />
+    <Content Include="Views\Enclosure\EditBlock.cshtml" />
+    <Content Include="Views\Enclosure\DeleteBlock.cshtml" />
     <Content Include="Views\Enclosure\Delete.cshtml" />
     <Content Include="Views\Enclosure\Details.cshtml" />
     <Content Include="Views\Employe\Delete.cshtml" />
@@ -2452,6 +2451,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\BlockPartial\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">

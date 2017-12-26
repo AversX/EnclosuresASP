@@ -4,18 +4,34 @@
     ViewBag.Title = "Удалить блок";
 }
 
-@using (Ajax.BeginForm("Delete", "BlockPartial", new { BlockGuid = Model.BlockGuid.ToString() }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccess" }, new { @id = "blockDeleteForm" }))
+@using (Ajax.BeginForm("DeleteBlock", "Enclosure", new { blockGuid = Model.BlockGuid.ToString() }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccess" }, new { @id = "blockDeleteForm" }))
 {
     @Html.AntiForgeryToken()
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
     <div>
-        @Html.HiddenFor(m => m.Blocks)
+        @Html.HiddenFor(m => m.BlockGuid)
+        @Html.HiddenFor(m => m.EnclosureID)
+        @Html.HiddenFor(m => m.Version)
 
         <div class="form-group">
-            @Html.Label("УИД", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.Label("UID", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.DisplayFor(m => m.UID, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Заводской №", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DisplayFor(m => m.Number, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Версия ПО", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DisplayFor(m => m.SoftwareVersion, new { htmlAttributes = new { @class = "form-control" } })
             </div>
         </div>
 
@@ -23,6 +39,13 @@
             @Html.Label("Тип блока", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.DisplayFor(m => m.BlockName.BlockName, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Комментарий", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DisplayFor(m => m.Comment, new { htmlAttributes = new { @class = "form-control" } })
             </div>
         </div>
 
@@ -44,11 +67,9 @@
 <script type="text/javascript">
     function onSuccess(result) {
         if (result.success == true) {
-            var url = '@Url.Action("Index", "BlockPartial", new { blocks = "resultBlocks" })';
-            url = url.replace("resultBlocks", result.data);
+            var url = '@Url.Action("BlocksIndex", "Enclosure", new { id = Model.EnclosureID })';
             $('#blocksTable').load(url);
             $('#blockModal').modal('hide');
-            $('#BlocksJSON').val(result.data);
         }
         else {
             $('#blockModalBody').html(result);

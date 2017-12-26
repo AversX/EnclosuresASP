@@ -35,17 +35,18 @@
                         Блоки
                     </div>
                     <table class="table table-striped">
-
                         <tr>
-                            <th class="text-center">ID</th>
+                            <th class="text-center">Тип</th>
                             <th class="text-center">UID</th>
-                            <th></th>
+                            <th class="text-center">Заводской №</th>
+                            <th class="text-center">Версия ПО</th>
+                            <th class="text-center">Комментарий</th>
+                            <th class="text-center">Действия</th>
                         </tr>
-
                         @if (Model.Blocks.Count() == 0)
                         {
                             <tr>
-                                <td colspan="6" class="text-center">Нет ни одной записи</td>
+                                <td colspan="6" class="text-center">Нет ни одного блока</td>
                             </tr>
                         }
                         else
@@ -54,27 +55,34 @@
                             {
                                 <tr>
                                     <td class="text-center">
-                                        @Html.DisplayFor(modelItem => item.BlockID)
+                                        @Html.DisplayFor(modelItem => item.BlockName.BlockName)
                                     </td>
                                     <td class="text-center">
                                         @Html.DisplayFor(modelItem => item.UID)
                                     </td>
                                     <td class="text-center">
+                                        @Html.DisplayFor(modelItem => item.Number)
+                                    </td>
+                                    <td class="text-center">
+                                        @Html.DisplayFor(modelItem => item.SoftwareVersion)
+                                    </td>
+                                    <td class="text-center">
+                                        @Html.DisplayFor(modelItem => item.Comment)
+                                    </td>
+                                    <td class="text-center">
                                         @{
-                                            string editBtnName = "editBtn" + item.BlockID;
-                                            string detailsBtnName = "detailsBtn" + item.BlockID;
-                                            string deleteBtnName = "deleteBtn" + item.BlockID;
-                                            <button id=@editBtnName name=@editBtnName class="k-primary" type="button" data-url="@Url.Action("Edit", "Block", new { id = item.BlockID, returnUrl = HttpContext.Current.Request.Url.AbsoluteUri })">Редактировать</button>
-
-                                            <button id=@deleteBtnName name=@deleteBtnName class="k-primary" type="button" data-url="@Url.Action("Delete", "Block", new { id = item.BlockID, returnUrl = HttpContext.Current.Request.Url.AbsoluteUri })">Удалить</button>
-
-                                            <script type="text/javascript">
-                                                $('.k-primary').kendoButton().click(function () {
-                                                    var url = $(this).data('url');
-                                                    window.location.href = url;
-                                                });
-                                            </script>
+                                            string editBtnName = "editBlockBtn" + item.BlockID;
+                                            string deleteBtnName = "deleteBlockBtn" + item.BlockID;
+                                            <button id=@editBtnName name=@editBtnName class="blockEditBtn k-primary" type="button" data-url="@Url.Action("Edit", "Block", new { id = item.BlockID, returnUrl = HttpContext.Current.Request.Url.AbsoluteUri })">Редактировать</button>
+                                            <button id=@deleteBtnName name=@deleteBtnName class="blockDeleteBtn k-primary" type="button" data-url="@Url.Action("Delete", "Block", new { id = item.BlockID, returnUrl = HttpContext.Current.Request.Url.AbsoluteUri })">Удалить</button>
                                         }
+                                        <script type="text/javascript">
+                                            $('.k-primary').kendoButton().click(function () {
+                                                var url = $(this).data('url');
+                                                window.location.href = url;
+                                            });
+                                        </script>
+
                                     </td>
                                 </tr>
                             }

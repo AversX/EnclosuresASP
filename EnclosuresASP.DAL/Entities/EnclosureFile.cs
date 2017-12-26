@@ -5,7 +5,7 @@ using EnclosuresASP.DAL.EF;
 
 namespace EnclosuresASP.DAL.Entities
 {
-    public class EnclosureFile : IVersionedRow
+    public class EnclosureFile
     {
         public int EnclosureFileID { get; set; }
         public byte[] Bytes { get; set; }
@@ -13,13 +13,8 @@ namespace EnclosuresASP.DAL.Entities
         public string MimeType { get; set; }
         public bool Temporary { get; set; }
         public string Username { get; set; }
-
-        [Required]
-        [ConcurrencyCheck]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public Guid Version { get; set; }
-
-        [Required]
+        
         public int EnclosureID { get; set; }
+        public string EnclosureVersion { get; set; }
     }
 }

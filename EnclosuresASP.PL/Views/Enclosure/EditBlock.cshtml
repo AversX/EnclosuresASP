@@ -1,19 +1,17 @@
 ﻿@model EnclosuresASP.PL.Models.BlockVM
 
 @{
-    ViewBag.Title = "Редактирование блока";
+    ViewBag.Title = "Редактировать блок";
 }
 
-@using (Html.BeginForm())
+@using (Ajax.BeginForm("EditBlock", "Enclosure", new { blockGuid = Model.BlockGuid.ToString() }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccess" }, new { @id = "blockEditForm" }))
 {
     @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-    <div class="form-horizontal">
-        <h4>Редактирование блока</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <input type="hidden" name="returnUrl" value="@ViewBag.returnUrl" />
-        @Html.HiddenFor(m => m.BlockID)
+    <div>
+        @Html.HiddenFor(x => x.Version)
+        @Html.HiddenFor(x => x.EnclosureID)
 
         <div class="form-group">
             @Html.Label("UID", htmlAttributes: new { @class = "control-label col-md-2" })
@@ -57,20 +55,30 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <div class="btn-group">
-                    <button id="submitBtn" name="submitBtn" class="k-primary" type="submit">Применить</button>
-                    <button id="cancelBtn" name="cancelBtn" class="k-default" type="button" data-url="@ViewBag.returnUrl">Отмена</button>
+                    <button class="k-primary" type="submit">Применить</button>
+                    <button class="k-default" data-dismiss="modal" type="button">Отмена</button>
                     <script type="text/javascript">
-                        $("#submitBtn").kendoButton();
-                        $("#cancelBtn").kendoButton().click(function () {
-                            var url = $(this).data('url');
-                            window.location.href = url;
-                        });
+                        $('.k-primary').kendoButton();
+                        $('.k-default').kendoButton();
                     </script>
                 </div>
             </div>
         </div>
     </div>
 }
+
+<script type="text/javascript">
+     function onSuccess(result) {
+        if (result.success == true) {
+            var url = '@Url.Action("BlocksIndex", "Enclosure", new { id = Model.EnclosureID })';
+            $('#blocksTable').load(url);
+            $('#blockModal').modal('hide');
+        }
+        else {
+            $('#blockModalBody').html(result);
+        }
+    }
+</script>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
