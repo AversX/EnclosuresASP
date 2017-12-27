@@ -411,7 +411,7 @@ namespace EnclosuresASP.PL.Controllers
         {
             if (ModelState.IsValid)
             {
-                TypicalBlockService typicalBlockService = new TypicalBlockService();
+                TypicalBlockService typicalBlockService = new TypicalBlockService(enclosureService.unitOfWork);
                 BlockService blockService = new BlockService(enclosureService.unitOfWork);
                 Guid BlockGuid = Guid.Parse(blockGuid);
                 Block block = blockService.Get(x => x.BlockGuid == BlockGuid).FirstOrDefault();
